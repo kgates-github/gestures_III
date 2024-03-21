@@ -1,0 +1,176 @@
+.header {
+  padding: 8px 10px 0px 10px;
+  width:100%; 
+  background-color: none; 
+  display:flex; 
+  flex-direction: row; 
+  position: absolute; 
+  top: 0px; left: 0px; 
+  z-index: 20000;
+}
+.title {
+  background-color: none; 
+  font: 12px 'Source Sans Pro'; 
+  flex:1; display: flex; 
+  flex-direction: column; 
+  justify-content: center; 
+  align-items: center;
+}
+
+.outerContainer {
+  position:absolute; 
+  top:0px; 
+  left:0px; 
+  z-index:100; 
+  width:100%; 
+  height:100%; 
+  background:none;
+  display: flex; 
+  justify-content: center;
+  font-family: "Source Sans Pro", sans-serif;
+  font-size:16px;
+  background-color: none;
+  overflow-y: hidden;
+}
+
+#innerContainer {
+  display:flex; 
+  background:none; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: none;
+}
+
+
+body {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  color: #444;
+  overflow-y: hidden;
+}
+
+#webcamButton {
+  /*border:2px solid #ccc; */
+  width:200px; 
+  height:33px;
+  border-radius:20px;
+  padding-top:2px;
+  padding-bottom:3px;
+  text-align: center;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 10000;
+  color:#fff;
+  background-color: #333;
+}
+
+#loadingContainer {
+  display:flex; 
+  background:none; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading {
+  display:flex; 
+  background:none; 
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.annotations {
+  height:52px; 
+}
+
+/* ------------------------------------------- */
+/* Headers and spacers */
+/* ------------------------------------------- */
+
+.header-01 {
+  color:#444; 
+  letter-spacing: 1.1px; 
+  text-transform: uppercase; 
+}
+.header-02 {
+  font-family:'Source Sans Pro', sans-serif; 
+  font-size: 32px; 
+  line-height: 1.03em;
+  font-weight:500;
+}
+.header-03 {
+  color:#222; 
+  font-family:'Source Sans Pro', sans-serif; 
+  font-size: 14px;
+  font-weight:700;
+  text-transform: uppercase;
+  letter-spacing: 1.1px;
+}
+.header-04 {
+  color:#222; 
+  font-family:'Source Sans Pro', sans-serif; 
+  font-size: 14px; 
+  font-weight:600;
+}
+.header-05 {
+  color:#222; 
+  font-family:'Source Sans Pro', sans-serif; 
+  font-size: 14px; 
+  font-weight:500;
+  text-transform: uppercase;
+  margin-right: 20px;
+  margin-left: 20px;
+  height: 40px;
+  line-height: 14px;
+  text-align: center;
+}
+
+.header-06 {
+  color:#666; 
+  font-family:'Source Sans Pro', sans-serif; 
+  font-size: 14px; 
+  font-weight:500;
+}
+
+.menu-card-outer {
+  margin-right: 20px;
+}
+
+.menu-card {
+  width: 300px;
+  height: 300px;
+  line-height: 1.6em;
+  font-size: 20px;
+  background: #fff;
+  border-radius: 30px;
+  padding: 28px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
+  overflow-y: hidden;
+}
+
+.menu-card:last-child {
+  margin-right: 0px;
+}
+
+.button-check {
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.logs {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+}
+
+.logs .log {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 11px;
+  line-height: 1.2em;
+  color: #222;
+  padding: 4px;
+  border-bottom: 1px solid #ccc;
+}
