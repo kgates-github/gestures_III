@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>LLM Inference Test</title>
+    <style>
+        /* Style for the textarea */
+        body {
+            font-family: 'Source Sans Pro', sans-serif;
+            font-size: 16px;
+            color: #000;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        textarea {
+            height: 800px;
+            width: 400px;
+            resize: none;
+            border: 0px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            caret-color: #000;
+            line-height: 1.4em;
+        }
+    
+        /* Style for the highlighted text */
+        ::selection {
+            background-color: #fff0b6; /* Change this to the desired highlight color */
+            color: #000; /* Change this to the desired text color */
+        }
+        textarea:focus {
+            border: none;
+            outline: none;
+        }
+    </style>
+</head>
+<body style="background-color: #fff; margin:40px">
+    
+    <div style="display: flex; flex-direction: row;">
+        <div style="margin-right:60px; margin-left:100px; ">
+            
+<textarea id="input" placeholder="Type something...">
+Richard Buckminster "Bucky" Fuller was a multifaceted American inventor, designer, architect, and philosopher, born in 1895. He dedicated his life to developing sustainable solutions that addressed human shelter, education, and resource use, aiming to benefit all humanity. Fuller is most renowned for his invention of the geodesic dome, a revolutionary lightweight and cost-effective structure that could cover large areas without internal supports. His ability to cross traditional boundaries between disciplines, coupled with his visionary approach, led to groundbreaking contributions in design, engineering, and architecture, encapsulating his philosophy of "doing more with less."
+
+Beyond the geodesic dome, Fuller's legacy includes over 30 patents and more than 30 books, through which he promoted his ideas about efficient and environmentally responsible design. He was a sought-after lecturer and professor, influencing generations of architects, designers, and thinkers. Fuller's concept of a global approach to solving humanity's pressing issues through innovative design and technology continues to inspire sustainability and environmental efforts around the world, underscoring his role as a pioneer in promoting a harmonious balance between nature and technology.
+</textarea>
+<br />
+
+            <input type="button" id="submit" value="TEST" disabled />
+        </div>
+        <div style="margin-right:60px;"">
+            <textarea id="output" value=""></textarea>
+        </div>
+        <div>
+            <textarea id="output2" value=""></textarea>
+        </div>
+    </div>
+
+<div>
+<textarea id="tempText" value=""></textarea>
+</div>
+   
+    <script type="module" src="index.js"></script>
+</body>
+</html>
+
+
+<!--
+Richard Buckminster "Bucky" Fuller (1895–1983) was a visionary American architect, systems theorist, author, designer, and inventor. Fuller's life mission was to find what he called "Design Science" solutions that could benefit all humanity, operating under his famous principle of "doing more with less." His work straddled multiple disciplines, from architecture and design to engineering and education, reflecting his belief in a comprehensive anticipatory design science to solve complex global problems.
+
+Fuller is best known for popularizing the geodesic dome, a lightweight, cost-effective structure that can cover more space without internal supports than any other enclosure. The strength, efficiency, and beauty of the geodesic dome embodied Fuller's vision for sustainable, practical design. Beyond architecture, he contributed over 30 patents, authored over 30 books, and spent his life lecturing worldwide about innovative design solutions for global sustainability.
+
+He taught at several institutions, including Black Mountain College and Southern Illinois University, influencing generations of architects, designers, and environmentalists. Fuller's legacy extends beyond his inventions and designs; he is celebrated for his holistic, anticipatory approach to global and environmental challenges. His philosophy and achievements continue to inspire those seeking to design a world that works for 100% of humanity, making him a pivotal figure in the sustainability and design movements.
+-->

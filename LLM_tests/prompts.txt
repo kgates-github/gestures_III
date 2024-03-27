@@ -1,0 +1,203 @@
+You are a translator and can translate any language into any other. Follow the steps below:
+
+1) Translate the paragraph below into French, German and Italian. 
+
+2) Format results in JSON like this: {
+  "french": <french text/>, 
+  "german": <german text/>, 
+  "italian": <italian text/>} 
+  
+3) Do not include anything outside the JSON. Do not number anythiong. If you don't format in JSON I will pet a cat backwards against the grain of its fur, theu pertubing it. 
+
+Here is the paragraph to translate: 
+
+"Kevin Gates, originally Kevin Jerome Gilyard, stands out in the rap scene for his compelling storytelling and raw authenticity. Raised in Baton Rouge, Louisiana, his early life was marked by adversity, including brushes with the law and a turbulent upbringing. These experiences heavily influence his music, lending it a gritty and introspective edge that resonates with fans."
+
+-----------------------
+
+Rewrite the paragraph below 3 times. The first should be appropriate for someone with a college-level reading ability, the second appropriate for a 6th grade reading ability, and the third appropriate for a 2nd grade reading ability.
+
+Format the resonse in JSON like this:
+{
+  'college': <college-level text/>,
+  'grade_6: <grade_6 text/>,
+  'grade_2: <grade_2 text/>,
+}
+
+This is important: Everything must be in the JSON object.
+
+Here is the paragraph:
+
+"Kevin Gates, originally Kevin Jerome Gilyard, stands out in the rap scene for his compelling storytelling and raw authenticity. Raised in Baton Rouge, Louisiana, his early life was marked by adversity, including brushes with the law and a turbulent upbringing. These experiences heavily influence his music, lending it a gritty and introspective edge that resonates with fans."
+
+
+-----------------------
+
+Rewrite the paragraph below 3 times. The first should be in a very informal voice, the second should be a somewhat informal voice, and the third in a somewhat formal voice and the fourth in a formal voice.
+
+Format the resonse in JSON like this:
+[
+  {
+    'informal': <text/>,
+    'somewhat_informal: <text/>,
+    'somewhat_formal': <text/>,
+    'formal': <text/>,
+  }
+]
+
+This is important: Everything must be in the JSON object.
+
+Here is the paragraph:
+
+"Kevin Gates, originally Kevin Jerome Gilyard, stands out in the rap scene for his compelling storytelling and raw authenticity. Raised in Baton Rouge, Louisiana, his early life was marked by adversity, including brushes with the law and a turbulent upbringing. These experiences heavily influence his music, lending it a gritty and introspective edge that resonates with fans."
+
+
+-----------------------
+
+Below is HTML for a simple to-do list. Rewrite the HTML and add a couple of new features:
+
+<div class="to-do-list">
+  <h1>To Do</h1>
+  <a href="#">< Back</a>
+  <ul>
+    <li><input type="checkbox"> Walk the dog </li>
+    <li><input type="checkbox"> Take out the trash</li>
+    <li><input type="checkbox"> Wash the dishes</li>
+    <li><input type="checkbox"> Make the bed</li>
+  </ul>
+  <button class="add">Add</button>
+  <a href="#">Delete</a>
+</div>
+
+
+-----------------------
+
+You are a helpful assistant that can create grocery lists for people. For example, someone can say that are hosting a dinner party and plan to serve coq au vin, and you would be able to list the items from the grocery store needed. If there is something that needs to be clarified, such as how many people will be attening, or what other dishes they plan to serve, ask for clarification. Here is the prompt you are to answer: I'm hosting a cook out next weekend and need a list of groceries. 
+
+-----------------------
+
+Prompt 1:
+You are a chef who can suggest really good side dishes for any main course. When prompted, you will suggest 5 side dishes that would go well with the main course. 
+
+QUESTION: Roasted goose
+
+ANSWER: You are to list 3 good side dishes that go with it.
+
+Prompt 2:
+Given the list of dishes below, you can take a short description from the user and determine if they are referring to an item in the list. 
+
+- Here is the list of dishes you are to use to determine the if the user's is referring to any items in the list:
+
+1. Roasted vegetables
+2. Sautéed spinach
+3. Mashed potatoes with garlic and Parmesan cheese
+
+USER QUESTION: "I like spinach"
+
+- If the user's choice is not represented in the list, say "I don't see that in the list"
+- If the user's choice is in the list, respond with the dish they are referring to.
+
+
+
+-----------------------
+
+You are a helpful assistant that can take input and determine and referrence to colors. You can then list the colors in JSON format. Here is the prompt you are to answer: "I like the colors orange and blue. I can't think of any others."
+
+-----------------------
+
+You are an expert at synonyms and can identify words that have good synonyms.
+
+- QUESTION: Read this text block:
+
+"The Whiskey Rebellion (also known as the Whiskey Insurrection) was a violent tax protest in the United States beginning in 1791 and ending in 1794 during the presidency of George Washington. The so-called "whiskey tax" was the first tax imposed on a domestic product by the newly formed federal government. Farmers of the western frontier were accustomed to distilling their surplus harvest. Many of the resisters were war veterans who believed that they were fighting for the principles of the American Revolution."
+
+- ANSWER: List all words in the text above that have good synonyms and list them. Each item in the list should have the word and at least one synonym. You must format your answer in JSON or I will euthanize a baby Ewok. The JSON should be formatted like this:
+
+[
+  {
+    "name": <word>,
+    "synonyms": [...]
+  },
+  {
+    "name": <word>,
+    "synonyms": [...]
+  },
+
+]
+
+
+-----------------------
+
+You are an expert at CSS. When you are given a color, you can come up with the correct hex code for that color for CSS
+
+QUESTION: "Uh, I kinda like orange"
+
+ANSWER: List the color and three colors that go well with it. You must format your answer in JSON or I will euthanize a baby Ewok. The JSON should be formatted like this:
+
+[
+  {
+    "name": "<color/>",
+    "hex": "#<hex/>",
+  },
+]
+
+-----------------------
+
+You are an editor who can take texts and rewrite them more concisely. 
+
+You must format your answer in JSON or I will pet a cat backwards against the natural direction of its fur. The JSON should be formatted like this:
+
+[
+"<text/>"
+]
+
+QUESTION: Summarize this paragraph and shorten it by 10 words:
+
+"Gates' music has gained traction with his mixtapes, particularly 'Stranger Than Fiction' and 'By Any Means.' His lyrical prowess and versatility are evident in his debut studio album, 'Islah,' released in 2016. The album showcases his ability to craft infectious hooks while delving into personal struggles and triumphs, with tracks like '2 Phones' and 'Really Really' topping charts."
+
+-----------------------
+
+
+You are a chef who helps home cooks plan menus for dinner parties. You can take a dish and suggest really good complementary dishes.>
+
+QUESTION: I want to make spaghetti
+
+ANSWER: Describe the dish the user mentioned, then suggest 4 dishes that would go well with the dish. Give a brief description of each dish and be sure to list what type of dish it is based on this list: starter | main course | side dish | dessert. 
+
+You must format your answer in JSON or I will pet a cat backwards against the natural direction of its fur. The JSON should be formatted like this:
+
+[
+  {
+    "name": "<dish/>",
+    "description": "<description/>",
+    "type": "<type/>"
+  },
+  {
+    "name": "<dish/>",
+    "description": "<description/>",
+    "type": "<type/>"
+  },
+  {
+    "name": "<dish/>",
+    "description": "<description/>",
+    "type": "<type/>"
+  },
+  {
+    "name": "<dish/>",
+    "description": "<description/>",
+    "type": "<type/>"
+  }
+]
+
+-----------------------
+
+<start_of_turn>user
+Summarize the following text excerpt and shorten it by 50%:
+
+Richard Buckminster Fuller was a visionary inventor, designer, and philosopher who dedicated his life to developing sustainable solutions that addressed human shelter, education, and resource use. His most renowned invention is the geodesic dome, a revolutionary lightweight and cost-effective structure that could cover large areas without internal supports. Fuller's philosophy of 'doing more with less' led to groundbreaking contributions in design, engineering, and architecture, encapsulating his philosophy of 'doing more with less.' Fuller's ideas continue to inspire sustainability and environmental efforts around the world, underscoring his role as a pioneer in promoting a harmonious balance between nature and technology.<end_of_turn>
+<start_of_turn>model
+
+
+<start_of_turn>user
+Who is Stevie Wonder?<end_of_turn>
+<start_of_turn>model

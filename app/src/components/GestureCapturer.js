@@ -157,7 +157,7 @@ function GestureCapturer(props) {
       </div>
       <div className="outerContainer" style={{ display: introThreeDisplay, position: "absolute", zIndex:10 }}>
         <div id="innerContainer">
-          Staring camera...
+          Starting camera...
         </div>
       </div>
       {/*
