@@ -18,22 +18,36 @@ function MicrophoneCard(props) {
   const variantsCardMain = {
     active:    { 
       y: 0, 
+      translateX: 0,
       scale: 1,
       opacity: 1, 
       transition: { duration: 0.2, ease: 'easeOut' }
     },
     inactive: { 
       y: 0,
+      translateX: 0,
       scale: 0.9,
       opacity: 0,
       transition: { duration: 0.2, ease: 'easeOut' }
     },
+    reset: { 
+      y: 0,
+      translateX: 0,  
+      opacity: 0,
+    },
     left: { 
       y: 0,
-      translateX: -300,
+      translateX: -450,
       scale: 1,
       opacity: 1, 
-      transition: { duration: 0.3, ease: 'easeOut' }
+      transition: { duration: 0.6, ease: 'anticipate' }
+    },
+    leftInactive: { 
+      y: 0,
+      translateX: -450,
+      scale: 0.9,
+      opacity: 0,
+      transition: { duration: 0.2, ease: 'easeOut' }
     },
   }
 
@@ -66,9 +80,9 @@ function MicrophoneCard(props) {
   }
 
   const queryLLM = () => {
-    console.log(props.transcription.length);
     const spans = document.getElementById('transcription').querySelectorAll('.word');
     
+    setMicActive(false);
     spans.forEach((span, index) => {
       setTimeout(() => {
         span.style.color = "#333";
@@ -76,11 +90,12 @@ function MicrophoneCard(props) {
     });
   
     // Call another function after all spans have changed color
-    setTimeout(() => {
+    /*setTimeout(() => {
       setMicActive(false);
-    }, (spans.length + 1) * 120);
+    }, (spans.length + 1) * 120);*/
     setTimeout(() => {
       setAlignLeft(true);
+      props.setShowCoachTip("point");
     }, (spans.length + 4) * 120);
   }
 
@@ -89,13 +104,13 @@ function MicrophoneCard(props) {
   };
 
   recognition.onend = () => {
-    
     recognition.stop();
     if (props.transcription.length < 1) {
       props.setIsActive(false);
       setMicActive(false);
     } else {
       props.setTranscription(props.transcription);
+      setMicActive(false);
       queryLLM();
     }
   };
@@ -108,12 +123,19 @@ function MicrophoneCard(props) {
   useEffect(() => {
     setAlignLeft(false);
     props.setShowCoachTip(null);
-    setAnimationCardMain(props.showCard ? "active" : "inactive");
+    if (props.transcription.length < 1) {
+      if (alignLeft) {
+        setAnimationCardMain(props.showCard ? "active" : "leftInactive");
+      } else {
+        setAnimationCardMain(props.showCard ? "active" : "inactive");
+      }
+    }
   }, [props.showCard]);
 
   useEffect(() => {
     if (props.isActive) {
       setMicActive(true);
+      setAlignLeft(false);
       recognition.start();
     } else {
       recognition.stop();
@@ -123,6 +145,10 @@ function MicrophoneCard(props) {
   useEffect(() => {
     if (alignLeft) {
       setAnimationCardMain("left");
+     
+      /*setTimeout(() => {
+        
+      }, 600);*/
     } 
   }, [alignLeft]);
   
@@ -131,20 +157,25 @@ function MicrophoneCard(props) {
     <motion.div 
       animate={animationCardMain}
       variants={variantsCardMain}
+      onAnimationComplete={() => {
+        console.log("**************");
+        console.log("animationCardMain ", animationCardMain);
+        console.log("props.showCard ", props.showCard);
+        console.log("props.isActive ", props.isActive);
+        console.log("micActive ", micActive);
+
+        if (animationCardMain == "leftInactive" && !props.showCard && !props.isActive && !micActive) {
+          console.log("!!resetting animationCardMain");
+          setAnimationCardMain("reset");
+        } else if (animationCardMain == "left" && props.showCard && props.isActive) {
+          props.setShowResponseCards(true);
+        }
+      }}
       initial="inactive"
-      className="menu-card-outer" 
-      style={{display:"flex", flexDirection: "column", alignItems:"center"}}
+      className="menu-card-outer"
+      style={{display:"flex", flexDirection: "column", alignItems:"center", background:"none"}}
     >
-      <motion.div className="menu-card"
-        //animate={animation}
-        //variants={variants}
-        initial="inactive"
-        onAnimationComplete={() => {
-          /*if (props.isExiting && props.isSelected && props.isActive) {
-            props.selectAndClose(props.title)
-          }*/
-        }}
-      >
+      <motion.div className="menu-card" >
         <div
           id='transcription'
           style={{

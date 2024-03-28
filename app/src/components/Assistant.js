@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { LogContext } from './LogContext';
 import MicrophoneCard from './MicrophoneCard';
+import ResponseCard from './ResponseCard';
 import CoachTip from './CoachTip';
 import { motion, useMotionValue } from "framer-motion"
 import LLMHandler from './LLMHandler';
@@ -11,10 +12,42 @@ function Assistant(props) {
   const [transcription, setTranscription] = useState(""); // "I want to make veggie burgers"
   const [isActive, setIsActive] = useState(false);
   const [showCoachTip, setShowCoachTip] = useState(null); // Whether to show coach tip
+  const [showResponseCards, setShowResponseCards] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [LLMIsLoaded, setLLMIsLoaded] = useState(false);
 
   const transcriptionRef = useRef(transcription);
+
+  const fakeResponseData = [
+    {
+      name: "Veggie Burgers", 
+      description:"A delicious veggie burger recipe with lentils and sauted mushrooms.", 
+      type: "Main Course", 
+      time: "30 min", 
+      difficulty: "Easy", 
+    },
+    {
+      name: "Sweet Potato Fries", 
+      description: "Easy and delicious sweet potato fries with fresh herbs and spices.",
+      type: "Side Dish", 
+      time: "40 min", 
+      difficulty: "Easy", 
+    },
+    {
+      name: "Tiramisu", 
+      description: "A classic Italian dessert made with coffee-soaked ladyfingers and mascarpone cream.",
+      type: "Dessert", 
+      time: "40 min", 
+      difficulty: "Medium", 
+    }
+  ]
+
+  const reset = () => {
+    setTranscription('');
+    setIsActive(false);
+    setShowCoachTip("intro");
+    setShowResponseCards(false);
+  }
   
   const handleOpenPalm = (e) => {
     log('handleOpenPalm ' + isActive + " " + e.detail.handedness);
@@ -27,6 +60,8 @@ function Assistant(props) {
     log('handleNoGesture');
     if (transcriptionRef.current.length < 1) {
       setIsActive(false);
+    } else if (transcriptionRef.current.length > 0) {
+      props.unsubscribe("No_Gesture", handleNoGesture);
     } else {
       setIsActive(false);
       setTimeout(() => {
@@ -50,9 +85,9 @@ function Assistant(props) {
   }, []);
 
   useEffect(() => {
-    if (!isActive) {
+    if (!isActive && transcription.length < 1) {
       setShowCoachTip("intro");
-    }
+    } 
   }, [isActive]);
 
   useEffect(() => {
@@ -67,9 +102,15 @@ function Assistant(props) {
       {/*<GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode && !selectionMade}/>*/}
       <CoachTip 
         image={"icon_palm_open"} 
-        text1={'This app helps you find recipes.'}
-        text2={'Raise your right hand and just say what you are cooking (e.g., "veggie burgers")'}
+        text1={'This app helps you find recipes and complimantary dishes.'}
+        text2={'Raise your right hand to start...'}
         showCoachTip={showCoachTip == "intro"}
+      />
+      <CoachTip 
+        image={"icon_point_up"} 
+        text1={''}
+        text2={'Point your index finger up'}
+        showCoachTip={showCoachTip == "point"}
       />
       <div className="outerContainer" style={{ 
         position: "fixed", 
@@ -84,35 +125,50 @@ function Assistant(props) {
         />
         */}
         <div id="innerContainer">
-          {/*<CoachTip 
-            image={"icon_palm_open"} 
-            text={"Raise your right hand..."}
-            showCoachTip={showCoachTip == "intro"}
-          />*/}
-          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"140px"}}>
-            <motion.div
-              className="dialog"
-              style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
-            >
-              <MicrophoneCard 
-                showCard={isActive}
-                isActive={isActive}
-                setIsActive={setIsActive}
-                subscribe={props.subscribe} 
-                unsubscribe={props.unsubscribe}
-                transcription={transcription} 
-                setTranscription={setTranscription}
-                setShowCoachTip={setShowCoachTip}
-              />
-            </motion.div>
+        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"40px"}}>
+          <motion.div
+            className="dialog"
+            style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
+          >
+           <MicrophoneCard 
+            showCard={isActive}
+            isActive={isActive}
+            setIsActive={setIsActive}
+            subscribe={props.subscribe} 
+            unsubscribe={props.unsubscribe}
+            transcription={transcription} 
+            setTranscription={setTranscription}
+            setShowCoachTip={setShowCoachTip}
+            handleNoGesture={handleNoGesture}
+            setShowResponseCards={setShowResponseCards}
+            />
+          </motion.div>
+          <div style={{
+            display: 'flex', 
+            flexDirection: 'row', 
+            alignItems: 'center', 
+            position: 'absolute', 
+            zIndex: 80,
+          }}>
+            {
+              fakeResponseData.map((item, index) => (
+                <ResponseCard 
+                  key={index}
+                  data={item}
+                  translateX={-210 + index * -350}
+                  isActive={showResponseCards}
+                />
+              ))
+            }
           </div>
+        </div>
           
         </div>
       </div>
+      <button onClick={() => reset()} style={{position: "fixed", right:"0px", zIndex:20002}}>Reset</button>
     </>
   );
 }
 
 export default Assistant;
 
-            
