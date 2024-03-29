@@ -31,7 +31,7 @@ function CoachTip(props) {
       flexDirection: "row",
     }}>
     <div style={{flex:1}}></div>
-    <div style={{width:"350px"}}>
+    <div style={{width:"300px"}}>
     <motion.div 
     animate={props.showCoachTip ? "open" : "closed"}
     initial="closed"
@@ -39,7 +39,7 @@ function CoachTip(props) {
     style={{
       position:"fixed",
       top: "150px",
-      width: "350px",
+      width: "300px",
       display: "flex",
       flexDirection: "column",
       justifyContent: "center",
@@ -47,8 +47,8 @@ function CoachTip(props) {
       background: "none",
       zIndex: 100000,
     }}>
-      <div style={{textAlign:"center", marginBottom:"20px", color:"#444"}}>{props.text1}</div>
-      <div style={{textAlign:"center", marginBottom:"20px", color:"#444"}}>{props.text2}</div>
+      <div style={{textAlign:"center", marginBottom:"28px", color:"#444"}}>{props.text1}</div>
+      <div style={{textAlign:"center", marginBottom:"28px", color:"#444"}}>{props.text2}</div>
       <img src={process.env.PUBLIC_URL + '/svg/' + props.image + '.svg'} 
         alt="open hand" 
         style={{width:'auto', height:'60px'}}

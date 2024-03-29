@@ -148,7 +148,7 @@ function GestureCapturer(props) {
       </div>
       <div className="outerContainer" style={{ display: introTwoDisplay, position: "absolute", zIndex:10 }}>
         <div id="innerContainer">
-          <div className="annotations">This prototype uses your webcam to recognize hand gestures.</div>
+          <div className="annotations">This prototype needs access to your webcam and mic.</div>
           <div ref={enableWebcamButtonRef}  id="webcamButton">
             <span className="">Enable Webcam</span>
           </div> 

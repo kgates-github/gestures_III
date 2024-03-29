@@ -104,7 +104,7 @@ function ReponseCard(props) {
             <span className="material-icons" style={{ fontSize: "20px", color: "#777" }}>
               timer
             </span> 
-            <div style={{marginLeft:"4px"}}>
+            <div style={{marginLeft:"4px", paddingTop:"2px"}}>
               {props.data.time}
             </div>
           </div>
@@ -112,8 +112,8 @@ function ReponseCard(props) {
           <div style={{ display: "flex", justifyContent:"center", alignItems:"center", textAlign: "center" }}>
             <div style={{ borderRadius: "50%", 
               backgroundColor: difficultyColors[props.data.difficulty], 
-              width: "15px", height: "15px" }}/>
-            <div style={{marginLeft:"6px"}}>
+              width: "13px", height: "13px" }}/>
+            <div style={{marginLeft:"8px", paddingTop:"2px"}}>
               {props.data.difficulty}
             </div>
           </div>

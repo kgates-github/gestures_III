@@ -21,7 +21,7 @@ function Assistant(props) {
   const fakeResponseData = [
     {
       name: "Veggie Burgers", 
-      description:"A delicious veggie burger recipe with lentils and sauted mushrooms.", 
+      description:"These responses are generic because the LLM model I tried to use said strange things.", 
       type: "Main Course", 
       time: "30 min", 
       difficulty: "Easy", 
@@ -48,7 +48,11 @@ function Assistant(props) {
     setShowCoachTip("intro");
     setShowResponseCards(false);
   }
-  
+
+  /****************************************
+    Gesture Handlers
+  *****************************************/
+
   const handleOpenPalm = (e) => {
     log('handleOpenPalm ' + isActive + " " + e.detail.handedness);
     props.subscribe("No_Gesture", handleNoGesture);
@@ -87,7 +91,7 @@ function Assistant(props) {
   useEffect(() => {
     if (!isActive && transcription.length < 1) {
       setShowCoachTip("intro");
-    } 
+    }
   }, [isActive]);
 
   useEffect(() => {
@@ -102,8 +106,8 @@ function Assistant(props) {
       {/*<GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode && !selectionMade}/>*/}
       <CoachTip 
         image={"icon_palm_open"} 
-        text1={'This app helps you find recipes and complimantary dishes.'}
-        text2={'Raise your right hand to start...'}
+        text1={'This prototype can find recipes and complimantary dishes for you.'}
+        text2={'Raise your hand and tell it what you want to cook...'}
         showCoachTip={showCoachTip == "intro"}
       />
       <CoachTip 

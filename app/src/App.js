@@ -6,6 +6,7 @@ import { LogContext } from './components/LogContext';
 import Assistant from './components/Assistant';
 
 function App() {
+  const userAgent = navigator.userAgent;
   const [logEntries, setLogEntries] = useState([]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [introDisplay, setIntroDisplay] = useState('none');
@@ -30,9 +31,10 @@ function App() {
     //console.log('publishing event', eventName, data);
     document.dispatchEvent(event);
   }
-  
+
   return (
     <LogContext.Provider value={log}>
+    { (userAgent.indexOf("Chrome") > -1) ? 
       <div className="App">
         <GestureCapturer 
           publish={publish} 
@@ -53,6 +55,7 @@ function App() {
           setIntroDisplay={setIntroDisplay}/> : null}
         <Log entries={logEntries}/>
       </div>
+     : <div style={{padding: "20px", textAlign:"center"}}>This app is only supported in Google Chrome</div> }
     </LogContext.Provider>
   );
 }

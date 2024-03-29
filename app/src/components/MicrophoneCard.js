@@ -96,6 +96,9 @@ function MicrophoneCard(props) {
     setTimeout(() => {
       setAlignLeft(true);
       props.setShowCoachTip("point");
+
+      log("GO INTO MOVE MODE")
+      //setShowCoachTip("point"); // Change this to "move hand"
     }, (spans.length + 4) * 120);
   }
 
@@ -133,10 +136,13 @@ function MicrophoneCard(props) {
   }, [props.showCard]);
 
   useEffect(() => {
+    recognition.stop();
+    
     if (props.isActive) {
+      recognition.start();
       setMicActive(true);
       setAlignLeft(false);
-      recognition.start();
+      
     } else {
       recognition.stop();
     }
@@ -145,10 +151,6 @@ function MicrophoneCard(props) {
   useEffect(() => {
     if (alignLeft) {
       setAnimationCardMain("left");
-     
-      /*setTimeout(() => {
-        
-      }, 600);*/
     } 
   }, [alignLeft]);
   
