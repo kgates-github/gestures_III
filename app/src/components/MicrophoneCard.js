@@ -95,9 +95,6 @@ function MicrophoneCard(props) {
     }, (spans.length + 1) * 120);*/
     setTimeout(() => {
       setAlignLeft(true);
-      props.setShowCoachTip("point");
-
-      log("GO INTO MOVE MODE")
       //setShowCoachTip("point"); // Change this to "move hand"
     }, (spans.length + 4) * 120);
   }
@@ -137,7 +134,7 @@ function MicrophoneCard(props) {
 
   useEffect(() => {
     recognition.stop();
-    
+
     if (props.isActive) {
       recognition.start();
       setMicActive(true);
@@ -171,6 +168,7 @@ function MicrophoneCard(props) {
           setAnimationCardMain("reset");
         } else if (animationCardMain == "left" && props.showCard && props.isActive) {
           props.setShowResponseCards(true);
+          props.setIsInSelectionMode(true);
         }
       }}
       initial="inactive"

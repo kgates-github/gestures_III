@@ -5,8 +5,6 @@ import { LogContext } from './LogContext';
 
 function ReponseCard(props) {
   const log = useContext(LogContext);
-  //const [animationCardMain, setAnimationCardMain] = useState('inactive');
-  
   
   const variantsCardMain = {
     active:    { 
@@ -24,10 +22,30 @@ function ReponseCard(props) {
     },
   }
 
+  const variantsCardInner = {
+    active:    { 
+      y: 0, 
+      transition: { duration: 0.4, ease: 'backOut' }
+    },
+    inactive: { 
+      y: 0,
+      transition: { duration: 0.4, ease: 'easeOut' }
+    },
+  }
+
+  const checkVariants = {
+    inactive: { pathLength: 0, },
+    active: { pathLength: 1,}
+  };
+
   const bannerColors = {
     "Main Course": "#007BFF",
     "Side Dish": "#ee6600",
     "Dessert": "#7C6D67",
+    "Appetizer": "#007BFF",
+    "Mammal": "#007BFF",
+    "Amphibian": "#ee6600",
+    "Ave": "#7C6D67",
     "Appetizer": "#007BFF",
   }
 
@@ -60,10 +78,50 @@ function ReponseCard(props) {
         left: "0px",
       }}
     >
-      <motion.div className="response_card" >
+      <motion.div 
+        className="response_card_hint"
+        style={{
+          flexDirection: "column", 
+          alignItems:"center", 
+          position: "absolute",
+          backgroundColor: "none",
+          zIndex: "-300",
+          top: "-80px",
+        }}
+      ></motion.div>
+      <motion.div 
+        className="response_card" 
+        animate={props.isActive ? "active" : "inactive"}
+        variants={variantsCardInner}
+        initial="inactive"
+        onAnimationComplete={() => {
+          
+        }}
+      >
+        <div style={{ 
+          display: 'flex', justifyContent: 'flex-end', 
+          paddingTop:"2px", position: "relative", left:"10px"
+        }}>
+          <svg style={{ background:"none", height:"28px", width:"28px" }}>
+            <motion.path
+              d="M15 29L25 38L40 19"
+              fill="transparent"
+              strokeWidth="6"
+              stroke="#0FD446"
+              variants={checkVariants}
+              initial="inactive"
+              transform="scale(0.6) translate(-10, -10)"
+              animate={props.isActive ? 'active' : 'inactive'}
+              transition={{ duration: 0.2, ease: 'easeOut', delay: 0.4 }} 
+              //onAnimationComplete={() => {
+              //  props.setIsExiting(true)
+              //}
+            />
+          </svg>
+        </div>
         <div style={{
           fontSize:"12px", 
-          fontWeight:"400", 
+          fontWeight:"700", 
           textAlign: "center",
           borderRadius: "12px",
           paddingTop:"8px",
@@ -72,6 +130,7 @@ function ReponseCard(props) {
           color: "#fff",
           textTransform: "uppercase",
           marginBottom:"16px",
+          zIndex: "20",
         }}>
           {props.data.type}
         </div>

@@ -47,8 +47,8 @@ function CoachTip(props) {
       background: "none",
       zIndex: 100000,
     }}>
-      <div style={{textAlign:"center", marginBottom:"28px", color:"#444"}}>{props.text1}</div>
-      <div style={{textAlign:"center", marginBottom:"28px", color:"#444"}}>{props.text2}</div>
+      {/*<div style={{textAlign:"center", marginBottom:"28px", color:"#444"}}>{props.text1}</div>*/}
+      <div style={{textAlign:"center", marginBottom:"16px", color:"#444"}}>{props.text2}</div>
       <img src={process.env.PUBLIC_URL + '/svg/' + props.image + '.svg'} 
         alt="open hand" 
         style={{width:'auto', height:'60px'}}

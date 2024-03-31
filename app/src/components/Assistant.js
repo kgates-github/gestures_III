@@ -13,6 +13,7 @@ function Assistant(props) {
   const [isActive, setIsActive] = useState(false);
   const [showCoachTip, setShowCoachTip] = useState(null); // Whether to show coach tip
   const [showResponseCards, setShowResponseCards] = useState(false);
+  const [isInSelectionMode, setIsInSelectionMode] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [LLMIsLoaded, setLLMIsLoaded] = useState(false);
 
@@ -21,7 +22,7 @@ function Assistant(props) {
   const fakeResponseData = [
     {
       name: "Veggie Burgers", 
-      description:"These responses are generic because the LLM model I tried to use said strange things.", 
+      description:"A delicious veggie burger recipe with lentils and sauted mushrooms. These responses are generic because the LLM model I tried to use said strange things.", 
       type: "Main Course", 
       time: "30 min", 
       difficulty: "Easy", 
@@ -47,6 +48,7 @@ function Assistant(props) {
     setIsActive(false);
     setShowCoachTip("intro");
     setShowResponseCards(false);
+    setIsInSelectionMode(false);
   }
 
   /****************************************
@@ -73,6 +75,37 @@ function Assistant(props) {
       }, 300);
     }
   }
+
+  const handlePointingUp = (e) => {
+    log('handlePointingUp')
+    if (e.detail.handedness == 'Left') {
+      /*anchor_x = e.detail.x;
+      setIsActive(true);
+      setIsInSelectionMode(true);
+      setSelectionMade(false);
+      setIsExiting(false);
+      setShowCoachTip("point_up_and_move");
+      props.setIntroDisplay('none');
+      log('handlePointingUp ' + isActive);
+
+      props.subscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
+      props.subscribe("Hand_Coords", handleGestureXY);
+      props.subscribe("Thumb_Up", handleThumbsUp);*/
+    }
+  }
+
+  //props.setShowCoachTip("point");
+
+  /****************************************
+    useEffects
+  *****************************************/
+    
+  useEffect(() => {
+    if (isInSelectionMode) {
+      setShowCoachTip('point_up_and_move');
+      props.subscribe("Pointing_Up", handlePointingUp);
+    }
+  }, [isInSelectionMode]);
 
   useEffect(() => {
     // Open coach tip
@@ -102,12 +135,12 @@ function Assistant(props) {
   return (
     <>
       {/*<LLMHandler setLLMIsLoaded={setLLMIsLoaded} LLMIsLoaded={LLMIsLoaded} userInput={userInput} />*/}
+      {/*<GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode && !selectionMade} />*/}
 
-      {/*<GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode && !selectionMade}/>*/}
       <CoachTip 
         image={"icon_palm_open"} 
-        text1={'This prototype can find recipes and complimantary dishes for you.'}
-        text2={'Raise your hand and tell it what you want to cook...'}
+        text1={''}
+        text2={'This prototype can help you find recipes. Raise your hand...'}
         showCoachTip={showCoachTip == "intro"}
       />
       <CoachTip 
@@ -115,6 +148,11 @@ function Assistant(props) {
         text1={''}
         text2={'Point your index finger up'}
         showCoachTip={showCoachTip == "point"}
+      />
+      <CoachTip 
+        image={"point_and_move"} 
+        text2={"Move you finger left and right"}
+        showCoachTip={showCoachTip == "point_up_and_move"}
       />
       <div className="outerContainer" style={{ 
         position: "fixed", 
@@ -145,19 +183,23 @@ function Assistant(props) {
             setShowCoachTip={setShowCoachTip}
             handleNoGesture={handleNoGesture}
             setShowResponseCards={setShowResponseCards}
+            setIsInSelectionMode={setIsInSelectionMode}
             />
           </motion.div>
-          <div style={{
-            display: 'flex', 
-            flexDirection: 'row', 
-            alignItems: 'center', 
-            position: 'absolute', 
-            zIndex: 80,
-          }}>
+          <div 
+            id='cards-container'
+            style={{
+              display: 'flex', 
+              flexDirection: 'row', 
+              alignItems: 'center', 
+              position: 'absolute', 
+              zIndex: 80,
+            }}
+          >
             {
               fakeResponseData.map((item, index) => (
                 <ResponseCard 
-                  key={index}
+                  key={'ResponseCard_' + index}
                   data={item}
                   translateX={-210 + index * -350}
                   isActive={showResponseCards}
