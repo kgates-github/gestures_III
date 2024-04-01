@@ -5,9 +5,11 @@ import { LogContext } from './LogContext';
 
 function ReponseCard(props) {
   const log = useContext(LogContext);
+  const [isSelected, setIsSelected] = useState(false);
+  const [isUnfurled, setIsUnfurled] = useState(false);
   
   const variantsCardMain = {
-    active:    { 
+    active: { 
       y: 0, 
       translateX: -140,
       scale: 1,
@@ -23,12 +25,36 @@ function ReponseCard(props) {
   }
 
   const variantsCardInner = {
-    active:    { 
-      y: 0, 
+    active: { 
+      y: -230, 
       transition: { duration: 0.4, ease: 'backOut' }
     },
     inactive: { 
-      y: 0,
+      y: -230,
+      transition: { duration: 0.4, ease: 'easeOut' }
+    },
+  }
+
+  const variantsCardHint = {
+    active: { 
+      y: 170,
+      transition: { duration: 0.4, ease: 'backOut' }
+    },
+    inactive: { 
+      y: 230,
+      transition: { duration: 0.4, ease: 'easeOut' }
+    },
+  }
+
+  const variantsHand = {
+    active: { 
+      y: -220,
+      opacity: 1,
+      transition: { duration: 0.6, ease: 'backOut' }
+    },
+    inactive: { 
+      y: -160,
+      opacity: 0,
       transition: { duration: 0.4, ease: 'easeOut' }
     },
   }
@@ -57,9 +83,15 @@ function ReponseCard(props) {
   }
 
   useEffect(() => {
-   
-  }, [props.data]);
-  
+    if (isUnfurled) {
+      const element = document.querySelector('#' + props.data.id);
+      const rect = element.getBoundingClientRect();
+      props.registerCardXCoords(props.data.id, rect.left, rect.width)
+    } else {
+      props.registerCardXCoords(props.data.id, 100, 100)
+    }
+  }, [isUnfurled]);
+
   return (
     <>
     <motion.div 
@@ -67,9 +99,10 @@ function ReponseCard(props) {
       variants={variantsCardMain}
       initial="inactive"
       onAnimationComplete={() => {
-        
+        setIsUnfurled(true);
       }}
       className="menu-card-outer"
+      id={props.data.id}
       style={{
         display: props.isActive ? "flex" : "none", 
         flexDirection: "column", 
@@ -80,15 +113,33 @@ function ReponseCard(props) {
     >
       <motion.div 
         className="response_card_hint"
+        animate={props.inHoverState ? "active" : "inactive"}
+        variants={variantsCardHint}
+        initial="inactive"
         style={{
           flexDirection: "column", 
-          alignItems:"center", 
-          position: "absolute",
+          alignItems:"flexStart", 
+          justifyContent:"flexStart",
           backgroundColor: "none",
           zIndex: "-300",
-          top: "-80px",
         }}
-      ></motion.div>
+      >
+        <motion.div 
+          animate={props.inHoverState ? "active" : "inactive"}
+          variants={variantsHand}
+          initial="active"
+          style={{
+            width:"100%", 
+            backgroundColor:"none", 
+            display:"flex", 
+            justifyContent:"center",
+          }}>
+            <img src={process.env.PUBLIC_URL + '/svg/icon_palm_open_up.svg'} 
+              alt="open hand" 
+              style={{width:'auto', height:'90px',}}
+            />
+        </motion.div>
+      </motion.div>
       <motion.div 
         className="response_card" 
         animate={props.isActive ? "active" : "inactive"}
@@ -111,7 +162,7 @@ function ReponseCard(props) {
               variants={checkVariants}
               initial="inactive"
               transform="scale(0.6) translate(-10, -10)"
-              animate={props.isActive ? 'active' : 'inactive'}
+              animate={props.isActive ? 'inactive' : 'inactive'}
               transition={{ duration: 0.2, ease: 'easeOut', delay: 0.4 }} 
               //onAnimationComplete={() => {
               //  props.setIsExiting(true)

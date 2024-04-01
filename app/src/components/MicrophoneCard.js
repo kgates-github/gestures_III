@@ -81,7 +81,7 @@ function MicrophoneCard(props) {
 
   const queryLLM = () => {
     const spans = document.getElementById('transcription').querySelectorAll('.word');
-    
+   
     setMicActive(false);
     spans.forEach((span, index) => {
       setTimeout(() => {
@@ -89,14 +89,9 @@ function MicrophoneCard(props) {
       }, index * 120);
     });
   
-    // Call another function after all spans have changed color
-    /*setTimeout(() => {
-      setMicActive(false);
-    }, (spans.length + 1) * 120);*/
     setTimeout(() => {
       setAlignLeft(true);
-      //setShowCoachTip("point"); // Change this to "move hand"
-    }, (spans.length + 4) * 120);
+    }, (spans.length + 3) * 120);
   }
 
   recognition.onstart = () => {

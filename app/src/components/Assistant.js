@@ -3,45 +3,55 @@ import { LogContext } from './LogContext';
 import MicrophoneCard from './MicrophoneCard';
 import ResponseCard from './ResponseCard';
 import CoachTip from './CoachTip';
+import GestureShadowDot from './GestureShadowDot';
 import { motion, useMotionValue } from "framer-motion"
 import LLMHandler from './LLMHandler';
 
+const initialFakeResponseData = [
+  {
+    id: "card_0",
+    name: "Veggie Burgers",
+    description:"These responses are generic because the LLM model I tried to use said strange things.",
+    type: "Main Course",
+    time: "30 min",
+    difficulty: "Easy",
+  },
+  {
+    id: "card_1",
+    name: "Sweet Potato Fries",
+    description: "Easy and delicious sweet potato fries with fresh herbs and spices.",
+    type: "Side Dish",
+    time: "40 min",
+    difficulty: "Easy",
+  },
+  {
+    id: "card_2",
+    name: "Tiramisu",
+    description: "A classic Italian dessert made with coffee-soaked ladyfingers and mascarpone cream.",
+    type: "Dessert",
+    time: "40 min",
+    difficulty: "Medium",
+  }
+]
 
 function Assistant(props) {
+  // Context
   const log = useContext(LogContext);
+
+  // States
   const [transcription, setTranscription] = useState(""); // "I want to make veggie burgers"
   const [isActive, setIsActive] = useState(false);
   const [showCoachTip, setShowCoachTip] = useState(null); // Whether to show coach tip
   const [showResponseCards, setShowResponseCards] = useState(false);
   const [isInSelectionMode, setIsInSelectionMode] = useState(false);
+  const [fakeResponseData, setFakeResponseData] = useState(initialFakeResponseData);
+  const [inHoverStateCard, setInHoverStateCard] = useState(null);
   const [userInput, setUserInput] = useState('');
   const [LLMIsLoaded, setLLMIsLoaded] = useState(false);
-
+ 
+  // Refs
   const transcriptionRef = useRef(transcription);
-
-  const fakeResponseData = [
-    {
-      name: "Veggie Burgers", 
-      description:"A delicious veggie burger recipe with lentils and sauted mushrooms. These responses are generic because the LLM model I tried to use said strange things.", 
-      type: "Main Course", 
-      time: "30 min", 
-      difficulty: "Easy", 
-    },
-    {
-      name: "Sweet Potato Fries", 
-      description: "Easy and delicious sweet potato fries with fresh herbs and spices.",
-      type: "Side Dish", 
-      time: "40 min", 
-      difficulty: "Easy", 
-    },
-    {
-      name: "Tiramisu", 
-      description: "A classic Italian dessert made with coffee-soaked ladyfingers and mascarpone cream.",
-      type: "Dessert", 
-      time: "40 min", 
-      difficulty: "Medium", 
-    }
-  ]
+  const xCoords = useRef({});
 
   const reset = () => {
     setTranscription('');
@@ -52,13 +62,28 @@ function Assistant(props) {
   }
 
   /****************************************
+    GestureShadowDot
+  *****************************************/
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const anchor_x      = useRef(0);
+  let new_x = 0;
+
+  const registerCardXCoords = (id, x, width) => {   
+    xCoords.current[id] = { x0: x, x1: (x + width) }
+  }
+
+  /****************************************
     Gesture Handlers
   *****************************************/
 
   const handleOpenPalm = (e) => {
     log('handleOpenPalm ' + isActive + " " + e.detail.handedness);
     props.subscribe("No_Gesture", handleNoGesture);
-    console.log('transcription: ' + transcription)
+
+    // Anchor the x position for x calculations
+    anchor_x.current = e.detail.x;
     setIsActive(true);
   }
 
@@ -76,38 +101,42 @@ function Assistant(props) {
     }
   }
 
-  const handlePointingUp = (e) => {
-    log('handlePointingUp')
-    if (e.detail.handedness == 'Left') {
-      /*anchor_x = e.detail.x;
-      setIsActive(true);
-      setIsInSelectionMode(true);
-      setSelectionMade(false);
-      setIsExiting(false);
-      setShowCoachTip("point_up_and_move");
-      props.setIntroDisplay('none');
-      log('handlePointingUp ' + isActive);
+  const handleGestureXY = (e) => {
+    new_x = window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x.current)) * 3;
+    x.set(new_x)
+    y.set(window.innerHeight / 2 - 80);
 
-      props.subscribe("No_Gesture", handleNoGesture); // We can't accidentaly close window
-      props.subscribe("Hand_Coords", handleGestureXY);
-      props.subscribe("Thumb_Up", handleThumbsUp);*/
-    }
+    // Detect card hits
+    Object.entries(xCoords.current).forEach(([id, item]) => {
+      if (new_x > item.x0 && new_x < item.x1) {
+        if (inHoverStateCard != id) {
+          setInHoverStateCard(id);
+        }
+      } else {
+        //setInHoverStateCard(null);
+      }
+    });
   }
 
-  //props.setShowCoachTip("point");
-
+  
   /****************************************
     useEffects
   *****************************************/
     
   useEffect(() => {
     if (isInSelectionMode) {
-      setShowCoachTip('point_up_and_move');
-      props.subscribe("Pointing_Up", handlePointingUp);
+      props.subscribe("Hand_Coords", handleGestureXY);
     }
   }, [isInSelectionMode]);
 
   useEffect(() => {
+    const newXCoords = {};
+    initialFakeResponseData.forEach((item, index) => {
+      newXCoords[item.id] = { x0: 0, x1: 0 }
+    });
+
+    xCoords.current = newXCoords; 
+
     // Open coach tip
     setShowCoachTip("intro");
     setIsActive(false);
@@ -135,7 +164,7 @@ function Assistant(props) {
   return (
     <>
       {/*<LLMHandler setLLMIsLoaded={setLLMIsLoaded} LLMIsLoaded={LLMIsLoaded} userInput={userInput} />*/}
-      {/*<GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode && !selectionMade} />*/}
+      <GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode} />
 
       <CoachTip 
         image={"icon_palm_open"} 
@@ -172,18 +201,18 @@ function Assistant(props) {
             className="dialog"
             style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
           >
-           <MicrophoneCard 
-            showCard={isActive}
-            isActive={isActive}
-            setIsActive={setIsActive}
-            subscribe={props.subscribe} 
-            unsubscribe={props.unsubscribe}
-            transcription={transcription} 
-            setTranscription={setTranscription}
-            setShowCoachTip={setShowCoachTip}
-            handleNoGesture={handleNoGesture}
-            setShowResponseCards={setShowResponseCards}
-            setIsInSelectionMode={setIsInSelectionMode}
+            <MicrophoneCard 
+              showCard={isActive}
+              isActive={isActive}
+              setIsActive={setIsActive}
+              subscribe={props.subscribe} 
+              unsubscribe={props.unsubscribe}
+              transcription={transcription} 
+              setTranscription={setTranscription}
+              setShowCoachTip={setShowCoachTip}
+              handleNoGesture={handleNoGesture}
+              setShowResponseCards={setShowResponseCards}
+              setIsInSelectionMode={setIsInSelectionMode}
             />
           </motion.div>
           <div 
@@ -199,10 +228,12 @@ function Assistant(props) {
             {
               fakeResponseData.map((item, index) => (
                 <ResponseCard 
-                  key={'ResponseCard_' + index}
+                  key={item.id}
                   data={item}
                   translateX={-210 + index * -350}
                   isActive={showResponseCards}
+                  registerCardXCoords={registerCardXCoords}
+                  inHoverState={inHoverStateCard == item.id}
                 />
               ))
             }

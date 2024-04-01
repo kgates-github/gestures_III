@@ -27,7 +27,7 @@ function GestureCapturer(props) {
     const video = videoRef.current;
     //const canvas = canvasRef.current;
     const enableWebcamButton = enableWebcamButtonRef.current;
-    
+
     const createGestureRecognizer = async () => {
       const vision = await FilesetResolver.forVisionTasks("https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.3/wasm");
       gestureRecognizer = await GestureRecognizer.createFromOptions(vision, {
@@ -90,11 +90,11 @@ function GestureCapturer(props) {
         }
 
         if (results.gestures.length > 0) {
+          //console.log(results.gestures[0][0].categoryName);
           if (lastGesture != results.gestures[0][0].categoryName && results.gestures[0][0].categoryName != 'None') {
             gestureName = results.gestures[0][0].categoryName;
             handedness = results.handedness[0][0].categoryName;
-            //console.log('Detected gesture: ' + gestureName + ' ' + handedness);
-
+            
             xs[0] = results.landmarks[0][0].x;
             xs[1] = results.landmarks[0][0].x;
             xs[2] = results.landmarks[0][0].x;
@@ -148,7 +148,16 @@ function GestureCapturer(props) {
       </div>
       <div className="outerContainer" style={{ display: introTwoDisplay, position: "absolute", zIndex:10 }}>
         <div id="innerContainer">
-          <div className="annotations">This prototype needs access to your webcam and mic.</div>
+          <div className="annotations"
+            style={{
+              width:"450px", 
+              height:"100px", 
+              textAlign:"center",
+              lineHeight:"1.2em",
+            }}>
+            This prototype is an exploration of how users might interact with an AI assistant hands-free.
+            It needs access to your webcam and mic.
+          </div>
           <div ref={enableWebcamButtonRef}  id="webcamButton">
             <span className="">Enable Webcam</span>
           </div> 
