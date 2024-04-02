@@ -46,12 +46,14 @@ function Assistant(props) {
   const [isInSelectionMode, setIsInSelectionMode] = useState(false);
   const [fakeResponseData, setFakeResponseData] = useState(initialFakeResponseData);
   const [inHoverStateCard, setInHoverStateCard] = useState(null);
+  const [hoverStateCardUp, setHoverStateCardUp] = useState(false);
   const [userInput, setUserInput] = useState('');
   const [LLMIsLoaded, setLLMIsLoaded] = useState(false);
  
   // Refs
   const transcriptionRef = useRef(transcription);
   const xCoords = useRef({});
+  const cardBounds = useRef({x0: 0, x1: 0});
 
   const reset = () => {
     setTranscription('');
@@ -67,11 +69,15 @@ function Assistant(props) {
 
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const anchor_x      = useRef(0);
+  const anchor_x = useRef(0);
+  const anchor_y = useRef(0);
   let new_x = 0;
 
   const registerCardXCoords = (id, x, width) => {   
     xCoords.current[id] = { x0: x, x1: (x + width) }
+    const minX0 = Math.min(...Object.entries(xCoords.current).map(([id, coords]) => coords.x0));
+    const maxX1 = Math.max(...Object.entries(xCoords.current).map(([id, coords]) => coords.x1));
+    cardBounds.current = { x0: minX0, x1: maxX1 }
   }
 
   /****************************************
@@ -84,6 +90,7 @@ function Assistant(props) {
 
     // Anchor the x position for x calculations
     anchor_x.current = e.detail.x;
+    anchor_y.current = e.detail.y;
     setIsActive(true);
   }
 
@@ -106,16 +113,21 @@ function Assistant(props) {
     x.set(new_x)
     y.set(window.innerHeight / 2 - 80);
 
+    if (e.detail.y < anchor_y.current - 0.1) {
+      if (!hoverStateCardUp) setHoverStateCardUp(true)
+    } else if (e.detail.y > anchor_y.current) {
+      setHoverStateCardUp(false)
+    }
+
     // Detect card hits
     Object.entries(xCoords.current).forEach(([id, item]) => {
       if (new_x > item.x0 && new_x < item.x1) {
-        if (inHoverStateCard != id) {
-          setInHoverStateCard(id);
-        }
-      } else {
-        //setInHoverStateCard(null);
+        if (inHoverStateCard != id) setInHoverStateCard(id);
       }
     });
+    if (new_x < cardBounds.current.x0 || new_x > cardBounds.current.x1) {
+      setInHoverStateCard(null);
+    }
   }
 
   
@@ -234,6 +246,7 @@ function Assistant(props) {
                   isActive={showResponseCards}
                   registerCardXCoords={registerCardXCoords}
                   inHoverState={inHoverStateCard == item.id}
+                  isChecked={inHoverStateCard == item.id && hoverStateCardUp}
                 />
               ))
             }

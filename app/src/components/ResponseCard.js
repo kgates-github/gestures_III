@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useContext } from 'react';
-//import GestureTarget from './GestureTarget';
 import { motion } from "framer-motion"
 import { LogContext } from './LogContext';
 
 function ReponseCard(props) {
   const log = useContext(LogContext);
-  const [isSelected, setIsSelected] = useState(false);
   const [isUnfurled, setIsUnfurled] = useState(false);
   
   const variantsCardMain = {
@@ -26,34 +24,38 @@ function ReponseCard(props) {
 
   const variantsCardInner = {
     active: { 
-      y: -230, 
+      y: -184, 
       transition: { duration: 0.4, ease: 'backOut' }
     },
     inactive: { 
-      y: -230,
+      y: -184,
       transition: { duration: 0.4, ease: 'easeOut' }
     },
+    isSelected: {
+      y: -160,
+      transition: { duration: 0.4, ease: 'easeOut' }
+    }
   }
 
   const variantsCardHint = {
     active: { 
-      y: 170,
+      y: 240,
       transition: { duration: 0.4, ease: 'backOut' }
     },
     inactive: { 
-      y: 230,
+      y: 272,
       transition: { duration: 0.4, ease: 'easeOut' }
     },
   }
 
   const variantsHand = {
     active: { 
-      y: -220,
+      y: -712,
       opacity: 1,
       transition: { duration: 0.6, ease: 'backOut' }
     },
     inactive: { 
-      y: -160,
+      y: -660,
       opacity: 0,
       transition: { duration: 0.4, ease: 'easeOut' }
     },
@@ -124,25 +126,12 @@ function ReponseCard(props) {
           zIndex: "-300",
         }}
       >
-        <motion.div 
-          animate={props.inHoverState ? "active" : "inactive"}
-          variants={variantsHand}
-          initial="active"
-          style={{
-            width:"100%", 
-            backgroundColor:"none", 
-            display:"flex", 
-            justifyContent:"center",
-          }}>
-            <img src={process.env.PUBLIC_URL + '/svg/icon_palm_open_up.svg'} 
-              alt="open hand" 
-              style={{width:'auto', height:'90px',}}
-            />
-        </motion.div>
       </motion.div>
       <motion.div 
         className="response_card" 
-        animate={props.isActive ? "active" : "inactive"}
+        animate={() => {
+          return props.isActive ? "active" : "inactive"
+        }}
         variants={variantsCardInner}
         initial="inactive"
         onAnimationComplete={() => {
@@ -162,7 +151,7 @@ function ReponseCard(props) {
               variants={checkVariants}
               initial="inactive"
               transform="scale(0.6) translate(-10, -10)"
-              animate={props.isActive ? 'inactive' : 'inactive'}
+              //animate={props.isChecked ? 'active' : 'inactive'}
               transition={{ duration: 0.2, ease: 'easeOut', delay: 0.4 }} 
               //onAnimationComplete={() => {
               //  props.setIsExiting(true)
@@ -177,7 +166,7 @@ function ReponseCard(props) {
           borderRadius: "12px",
           paddingTop:"8px",
           paddingBottom:"5px",
-          backgroundColor: bannerColors[props.data.type],
+          backgroundColor: props.isChecked ? "black" : bannerColors[props.data.type],
           color: "#fff",
           textTransform: "uppercase",
           marginBottom:"16px",
@@ -227,18 +216,24 @@ function ReponseCard(props) {
               {props.data.difficulty}
             </div>
           </div>
-          
         </div>
-        
       </motion.div>
       
-      {/*
-        <GestureTarget 
-          isActive={props.isActive} 
-          isSelected={props.isSelected} 
-          setIsExiting={props.setIsExiting}
-        />
-      */}
+      <motion.div 
+          animate={props.inHoverState ? "active" : "inactive"}
+          variants={variantsHand}
+          initial="active"
+          style={{
+            width:"100%", 
+            backgroundColor:"none", 
+            display:"flex", 
+            justifyContent:"center",
+          }}>
+            <img src={process.env.PUBLIC_URL + '/svg/icon_palm_open_up.svg'} 
+              alt="open hand" 
+              style={{width:'auto', height:'90px',}}
+            />
+        </motion.div>
     </motion.div>
     </>
   );
