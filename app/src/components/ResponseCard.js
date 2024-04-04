@@ -5,6 +5,7 @@ import { LogContext } from './LogContext';
 function ReponseCard(props) {
   const log = useContext(LogContext);
   const [isUnfurled, setIsUnfurled] = useState(false);
+  const [inSelectedState, setInselectedState] = useState(false);
   
   const variantsCardMain = {
     active: { 
@@ -24,46 +25,81 @@ function ReponseCard(props) {
 
   const variantsCardInner = {
     active: { 
-      y: -184, 
+      y: -274, 
+      //opacity: 0,
       transition: { duration: 0.4, ease: 'backOut' }
     },
     inactive: { 
-      y: -184,
+      y: -274,
+      //opacity: 0,
       transition: { duration: 0.4, ease: 'easeOut' }
     },
-    isSelected: {
-      y: -160,
+    isHovered: {  
+      y: -284,
+      //opacity: 0,
       transition: { duration: 0.4, ease: 'easeOut' }
+    },
+    isChecked: {
+      y: -314,
+      //opacity: 0,
+      transition: { duration: 0.3, ease: 'backOut',}
+    },
+    isGripped: {
+      rotate: 3,
+      //opacity: 0,
+      transition: { duration: 0.3, ease: 'backOut' }
     }
   }
 
   const variantsCardHint = {
-    active: { 
-      y: 240,
+    activeUp: { 
+      y: 220,
+      opacity: 1,
+      transition: { duration: 0.4, ease: 'backOut' }
+    },
+    activeDown: { 
+      y: 278,
+      opacity: 1,
       transition: { duration: 0.4, ease: 'backOut' }
     },
     inactive: { 
-      y: 272,
-      transition: { duration: 0.4, ease: 'easeOut' }
+      y: 278,
+      opacity: 0,
+      transition: { duration: 0.4, ease: 'backOut' }
     },
   }
 
-  const variantsHand = {
-    active: { 
-      y: -712,
+  const variantsHintArrow = {
+    activeUp: { 
+      y: -230,
       opacity: 1,
-      transition: { duration: 0.6, ease: 'backOut' }
+      transition: { duration: 0.6, ease: 'easeOut' }
+    },
+    activeDown: { 
+      y: 182, // -230
+      opacity: 1,
+      transition: { duration: 0.6, ease: 'easeOut' }
     },
     inactive: { 
-      y: -660,
+      y: 0,
       opacity: 0,
       transition: { duration: 0.4, ease: 'easeOut' }
     },
+    isChecked: {
+      opacity: 0,
+      transition: { duration: 0.3, ease: 'easeOut' }
+    }
   }
 
   const checkVariants = {
-    inactive: { pathLength: 0, },
-    active: { pathLength: 1,}
+    inactive: { 
+      pathLength: 0, 
+      transition: { duration: 0, }
+    },
+    active: { 
+      pathLength: 1,
+      transition: { duration: 0.2, ease: 'linear', delay: 0.4 }
+    }
   };
 
   const bannerColors = {
@@ -72,7 +108,7 @@ function ReponseCard(props) {
     "Dessert": "#7C6D67",
     "Appetizer": "#007BFF",
     "Mammal": "#007BFF",
-    "Amphibian": "#ee6600",
+    "Cocktail": "#ee6600",
     "Ave": "#7C6D67",
     "Appetizer": "#007BFF",
   }
@@ -86,6 +122,7 @@ function ReponseCard(props) {
 
   useEffect(() => {
     if (isUnfurled) {
+      // Register the x-coordinates of the card
       const element = document.querySelector('#' + props.data.id);
       const rect = element.getBoundingClientRect();
       props.registerCardXCoords(props.data.id, rect.left, rect.width)
@@ -94,6 +131,23 @@ function ReponseCard(props) {
     }
   }, [isUnfurled]);
 
+/*  
+  useEffect(() => {
+    if (props.isChecked && props.isActive) {
+      props.setSelectedCard(props.data.id)
+      setInselectedState(true);
+    } else if (!props.isChecked && props.isActive) {
+      props.unsetSelectedCard(props.data.id)
+      setInselectedState(true);
+    }
+  }, [props.isChecked, props.isActived, props.data]);
+*/
+
+  useEffect(() => {
+    props.setShowCoachTip(null)
+  }, [props.data, setInselectedState, inSelectedState]);
+
+  
   return (
     <>
     <motion.div 
@@ -115,7 +169,13 @@ function ReponseCard(props) {
     >
       <motion.div 
         className="response_card_hint"
-        animate={props.inHoverState ? "active" : "inactive"}
+        animate={() => {
+          if (!inSelectedState) {
+            return (props.inHoverState && props.inGripState) ? "activeUp" : "inactive";
+          } else {
+            return (props.inHoverState && props.inGripState) ? "activeDown" : "inactive";
+          }
+        }}
         variants={variantsCardHint}
         initial="inactive"
         style={{
@@ -128,9 +188,61 @@ function ReponseCard(props) {
       >
       </motion.div>
       <motion.div 
+        animate={() => {
+          if (!inSelectedState) {
+            return (props.inHoverState && props.inGripState) ? "activeUp" : "inactive";
+          } else {
+            return (props.inHoverState && props.inGripState) ? "activeDown" : "inactive";
+          }
+        }}
+        variants={variantsHintArrow}
+        initial="active"
+        onAnimationComplete={() => {
+          //props.inHoverState && props.inGripState && props.isChecked
+          if (props.inHoverState && props.inGripState) {
+            setTimeout(() => {
+              if (inSelectedState) {
+                props.setHoverStateCardUp(false)
+                props.unsetSelectedCard(props.data.id)
+                setInselectedState(false);
+              } else {
+                props.setHoverStateCardUp(true)
+                props.setSelectedCard(props.data.id)
+                setInselectedState(true);
+              }
+            }, 500);
+          }
+        }}
+        style={{
+          width:"100%", 
+          backgroundColor:"none", 
+          display:"flex", 
+          justifyContent:"center",
+        }}
+        >
+          <img src={process.env.PUBLIC_URL + '/svg/icon_arrow_hint.svg'} 
+            alt="open hand" 
+            style={{width:'auto', height:'90px',}}
+          />
+      </motion.div>
+      <motion.div 
         className="response_card" 
         animate={() => {
-          return props.isActive ? "active" : "inactive"
+          if (!inSelectedState) {
+            if (props.inHoverState && props.inGripState && props.isChecked) {
+              return "isChecked"
+            }
+            if (props.inHoverState && props.inGripState) {
+              return "isGripped"
+            }
+            if (props.inHoverState) {
+              return "isHovered"
+            }
+            // If we get through all the above cases, we are in the default state
+            return props.isActive ? "active" : "inactive";
+          } else {
+            return "isChecked"
+          }
         }}
         variants={variantsCardInner}
         initial="inactive"
@@ -151,11 +263,10 @@ function ReponseCard(props) {
               variants={checkVariants}
               initial="inactive"
               transform="scale(0.6) translate(-10, -10)"
-              //animate={props.isChecked ? 'active' : 'inactive'}
-              transition={{ duration: 0.2, ease: 'easeOut', delay: 0.4 }} 
-              //onAnimationComplete={() => {
-              //  props.setIsExiting(true)
-              //}
+              animate={props.isChecked && props.inHoverState && props.inGripState || inSelectedState ? 'active' : 'inactive'}
+              onAnimationComplete={() => {
+                
+              }}
             />
           </svg>
         </div>
@@ -166,7 +277,7 @@ function ReponseCard(props) {
           borderRadius: "12px",
           paddingTop:"8px",
           paddingBottom:"5px",
-          backgroundColor: props.isChecked ? "black" : bannerColors[props.data.type],
+          backgroundColor: bannerColors[props.data.type],
           color: "#fff",
           textTransform: "uppercase",
           marginBottom:"16px",
@@ -218,22 +329,6 @@ function ReponseCard(props) {
           </div>
         </div>
       </motion.div>
-      
-      <motion.div 
-          animate={props.inHoverState ? "active" : "inactive"}
-          variants={variantsHand}
-          initial="active"
-          style={{
-            width:"100%", 
-            backgroundColor:"none", 
-            display:"flex", 
-            justifyContent:"center",
-          }}>
-            <img src={process.env.PUBLIC_URL + '/svg/icon_palm_open_up.svg'} 
-              alt="open hand" 
-              style={{width:'auto', height:'90px',}}
-            />
-        </motion.div>
     </motion.div>
     </>
   );

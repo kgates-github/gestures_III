@@ -19,7 +19,7 @@ function GestureShadowDot(props) {
         x: props.x,
         y: props.y,
         zIndex: 100,
-        display: props.isInSelectionMode ? 'block' : 'none',
+        display: 'block',
       }}
     />
   );

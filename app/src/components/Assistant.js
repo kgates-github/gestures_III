@@ -4,33 +4,37 @@ import MicrophoneCard from './MicrophoneCard';
 import ResponseCard from './ResponseCard';
 import CoachTip from './CoachTip';
 import GestureShadowDot from './GestureShadowDot';
+import CheckConfirm from './CheckConfirm';
 import { motion, useMotionValue } from "framer-motion"
 import LLMHandler from './LLMHandler';
 
 const initialFakeResponseData = [
   {
     id: "card_0",
-    name: "Veggie Burgers",
-    description:"These responses are generic because the LLM model I tried to use said strange things.",
+    name: "Krabby Patty",
+    description:"Krabby Patties are the best-known food at the Krusty Krab, and the most famous burger in Bikini Bottom.",
     type: "Main Course",
     time: "30 min",
     difficulty: "Easy",
+    isSelected: false,
   },
   {
     id: "card_1",
-    name: "Sweet Potato Fries",
-    description: "Easy and delicious sweet potato fries with fresh herbs and spices.",
-    type: "Side Dish",
-    time: "40 min",
+    name: "White Russian",
+    description: "Kahlua, vodka, and cream served over ice. It's the perfect drink for unwinding after league play.",
+    type: "Cocktail",
+    time: "10 min",
     difficulty: "Easy",
+    isSelected: false,
   },
   {
     id: "card_2",
-    name: "Tiramisu",
-    description: "A classic Italian dessert made with coffee-soaked ladyfingers and mascarpone cream.",
+    name: "Toaster Strudel",
+    description: "Toaster Strudel is a delicious, versitile pastry that is quick and easy to make. Dip slices in a white Russian for a decadent treat.",
     type: "Dessert",
-    time: "40 min",
-    difficulty: "Medium",
+    time: "3 min",
+    difficulty: "Easy",
+    isSelected: false,
   }
 ]
 
@@ -46,9 +50,13 @@ function Assistant(props) {
   const [isInSelectionMode, setIsInSelectionMode] = useState(false);
   const [fakeResponseData, setFakeResponseData] = useState(initialFakeResponseData);
   const [inHoverStateCard, setInHoverStateCard] = useState(null);
+  const [inGripStateCard, setInGripStateCard] = useState(null);
   const [hoverStateCardUp, setHoverStateCardUp] = useState(false);
-  const [userInput, setUserInput] = useState('');
-  const [LLMIsLoaded, setLLMIsLoaded] = useState(false);
+  const [grabCardShown,   setGrabCardShown] = useState(false);
+  const [showShadowDot, setShowShadowDot] = useState(false);
+  const [showCheckConfirm, setShowCheckConfirm] = useState(false);
+  //const [userInput, setUserInput] = useState('');
+  //const [LLMIsLoaded, setLLMIsLoaded] = useState(false);
  
   // Refs
   const transcriptionRef = useRef(transcription);
@@ -57,12 +65,43 @@ function Assistant(props) {
 
   const reset = () => {
     setTranscription('');
+    setFakeResponseData(initialFakeResponseData);
+    setShowShadowDot(false);
     setIsActive(false);
     setShowCoachTip("intro");
     setShowResponseCards(false);
     setIsInSelectionMode(false);
+    setInHoverStateCard(null);
+    setInGripStateCard(null);
+    setHoverStateCardUp(false);
   }
 
+  /****************************************
+    Set Selected Card
+  *****************************************/
+
+  const setSelectedCard = (id) => {
+    console.log('setSelectedCard')
+    const newFakeResponseData = fakeResponseData.map((item) => {   
+      if (item.id == id) {  
+        item.isSelected = true;
+      }
+      return item;
+    });
+    setFakeResponseData(newFakeResponseData);
+  }  
+  
+  const unsetSelectedCard = (id) => {
+    console.log('unsetSelectedCard')
+    const newFakeResponseData = fakeResponseData.map((item) => {   
+      if (item.id == id) {  
+        item.isSelected = false;
+      }
+      return item;
+    });
+    //setFakeResponseData(newFakeResponseData);
+  }  
+  
   /****************************************
     GestureShadowDot
   *****************************************/
@@ -85,17 +124,30 @@ function Assistant(props) {
   *****************************************/
 
   const handleOpenPalm = (e) => {
-    log('handleOpenPalm ' + isActive + " " + e.detail.handedness);
+    console.log('handleOpenPalm ' + isActive + " " + e.detail.handedness);
     props.subscribe("No_Gesture", handleNoGesture);
 
+    // Reset grip state
+    setInGripStateCard(null);
+    y.set(window.innerHeight / 2 - 80); // Reset y when engaging cards
+
+    if (isInSelectionMode) { 
+      props.subscribe("Hand_Coords",  (e) => handleGestureXY(e, inGripStateCard));
+      setShowShadowDot(true);
+    }
+    
     // Anchor the x position for x calculations
     anchor_x.current = e.detail.x;
-    anchor_y.current = e.detail.y;
     setIsActive(true);
   }
 
   const handleNoGesture = (e) => {
-    log('handleNoGesture');
+    console.log('handleNoGesture');
+
+    setShowShadowDot(false);
+    props.unsubscribe("Hand_Coords", handleGestureXY);
+    props.unsubscribe("Closed_Fist", (e) => handleClosedFist(e, inHoverStateCard));
+
     if (transcriptionRef.current.length < 1) {
       setIsActive(false);
     } else if (transcriptionRef.current.length > 0) {
@@ -108,38 +160,61 @@ function Assistant(props) {
     }
   }
 
-  const handleGestureXY = (e) => {
-    new_x = window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x.current)) * 3;
-    x.set(new_x)
-    y.set(window.innerHeight / 2 - 80);
+  const handleClosedFist = (e, inHoverStateCard) => {
+    console.log('handleClosedFist');
 
-    if (e.detail.y < anchor_y.current - 0.1) {
-      if (!hoverStateCardUp) setHoverStateCardUp(true)
-    } else if (e.detail.y > anchor_y.current) {
-      setHoverStateCardUp(false)
-    }
-
-    // Detect card hits
-    Object.entries(xCoords.current).forEach(([id, item]) => {
-      if (new_x > item.x0 && new_x < item.x1) {
-        if (inHoverStateCard != id) setInHoverStateCard(id);
-      }
-    });
-    if (new_x < cardBounds.current.x0 || new_x > cardBounds.current.x1) {
-      setInHoverStateCard(null);
+    anchor_y.current = e.detail.y;
+    if (inHoverStateCard != null) {
+      setInGripStateCard(inHoverStateCard);
     }
   }
 
-  
+  const handleGestureXY = (e, inGripStateCard) => {
+    console.log('handleGestureXY');
+
+    // Handle x movement
+    
+      new_x = window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x.current)) * 3;
+      x.set(new_x);
+
+      // Detect card hits
+      Object.entries(xCoords.current).forEach(([id, item]) => {
+        if (new_x > item.x0 && new_x < item.x1) {
+          if (inHoverStateCard != id) setInHoverStateCard(id);
+        }
+      });
+      if (new_x < cardBounds.current.x0 || new_x > cardBounds.current.x1) {
+        setInHoverStateCard(null);
+      }
+    
+
+    // Handle y movement
+    /*
+    y.set(window.innerHeight / 2 - 80);
+
+    if (e.detail.y < anchor_y.current - 0.1) {
+      if (!hoverStateCardUp) {
+        setHoverStateCardUp(true)
+      }
+    } else if (e.detail.y > anchor_y.current + 0.1) {
+      if (hoverStateCardUp) {
+        setHoverStateCardUp(false)
+      }
+    }
+    */
+  }
+
   /****************************************
     useEffects
   *****************************************/
     
   useEffect(() => {
     if (isInSelectionMode) {
-      props.subscribe("Hand_Coords", handleGestureXY);
+      setShowShadowDot(true);
+      props.subscribe("Hand_Coords", (e) => handleGestureXY(e, inGripStateCard)); 
+      props.subscribe("Closed_Fist", (e) => handleClosedFist(e, inHoverStateCard));
     }
-  }, [isInSelectionMode]);
+  }, [isInSelectionMode, inHoverStateCard, inGripStateCard]);
 
   useEffect(() => {
     const newXCoords = {};
@@ -172,29 +247,43 @@ function Assistant(props) {
     transcriptionRef.current = transcription;
   }, [transcription]);
 
+  useEffect(() => {
+    console.log('useEffect inGripStateCard', inGripStateCard)
+  }, [inGripStateCard]);
+
+  useEffect(() => {
+    if (inHoverStateCard != null && !grabCardShown) {
+      setGrabCardShown(true);
+      setShowCoachTip("grab_card");
+    } 
+  }, [inHoverStateCard]);
+
   
+
   return (
     <>
       {/*<LLMHandler setLLMIsLoaded={setLLMIsLoaded} LLMIsLoaded={LLMIsLoaded} userInput={userInput} />*/}
-      <GestureShadowDot x={x} y={y} isInSelectionMode={isInSelectionMode} />
+
+      {showShadowDot && <GestureShadowDot x={x} y={y} />}
+        
 
       <CoachTip 
         image={"icon_palm_open"} 
         text1={''}
-        text2={'This prototype can help you find recipes. Raise your hand...'}
+        text2={'This prototype can help you find recipes. Raise your hand to start...'}
         showCoachTip={showCoachTip == "intro"}
       />
       <CoachTip 
-        image={"icon_point_up"} 
-        text1={''}
-        text2={'Point your index finger up'}
-        showCoachTip={showCoachTip == "point"}
+        image={"palm_and_move"} 
+        text2={"Move your hand"}
+        showCoachTip={showCoachTip == "palm_and_move"}
       />
       <CoachTip 
-        image={"point_and_move"} 
-        text2={"Move you finger left and right"}
-        showCoachTip={showCoachTip == "point_up_and_move"}
+        image={"palm_to_grip"} 
+        text2={"Grab a card to select"}
+        showCoachTip={showCoachTip == "grab_card"}
       />
+      
       <div className="outerContainer" style={{ 
         position: "fixed", 
         zIndex:10,
@@ -208,51 +297,67 @@ function Assistant(props) {
         />
         */}
         <div id="innerContainer">
-        <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"40px"}}>
-          <motion.div
-            className="dialog"
-            style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
-          >
-            <MicrophoneCard 
-              showCard={isActive}
-              isActive={isActive}
-              setIsActive={setIsActive}
-              subscribe={props.subscribe} 
-              unsubscribe={props.unsubscribe}
-              transcription={transcription} 
-              setTranscription={setTranscription}
-              setShowCoachTip={setShowCoachTip}
-              handleNoGesture={handleNoGesture}
-              setShowResponseCards={setShowResponseCards}
-              setIsInSelectionMode={setIsInSelectionMode}
-            />
-          </motion.div>
-          <div 
-            id='cards-container'
-            style={{
-              display: 'flex', 
-              flexDirection: 'row', 
-              alignItems: 'center', 
-              position: 'absolute', 
-              zIndex: 80,
-            }}
-          >
-            {
-              fakeResponseData.map((item, index) => (
-                <ResponseCard 
-                  key={item.id}
-                  data={item}
-                  translateX={-210 + index * -350}
-                  isActive={showResponseCards}
-                  registerCardXCoords={registerCardXCoords}
-                  inHoverState={inHoverStateCard == item.id}
-                  isChecked={inHoverStateCard == item.id && hoverStateCardUp}
+          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"40px"}}>
+            <motion.div
+              className="dialog"
+              style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
+            >
+              <MicrophoneCard 
+                showCard={isActive}
+                isActive={isActive}
+                setIsActive={setIsActive}
+                subscribe={props.subscribe} 
+                unsubscribe={props.unsubscribe}
+                transcription={transcription} 
+                setTranscription={setTranscription}
+                setShowCoachTip={setShowCoachTip}
+                showCoachTip={showCoachTip}
+                handleNoGesture={handleNoGesture}
+                setShowResponseCards={setShowResponseCards}
+                setIsInSelectionMode={setIsInSelectionMode}
+                setShowCheckConfirm={setShowCheckConfirm}
+              />
+            </motion.div>
+            <div 
+              id='cards-container'
+              style={{
+                display: 'flex', 
+                flexDirection: 'row', 
+                alignItems: 'center', 
+                position: 'absolute', 
+                zIndex: 80,
+                background: "none",
+              }}
+            >
+              {
+                fakeResponseData.map((item, index) => (
+                  <ResponseCard 
+                    key={item.id}
+                    data={item}
+                    translateX={-210 + index * -350}
+                    isActive={showResponseCards}
+                    registerCardXCoords={registerCardXCoords}
+                    inHoverState={inHoverStateCard == item.id}
+                    inGripState={inGripStateCard == item.id}
+                    isChecked={inHoverStateCard == item.id && hoverStateCardUp}
+                    hoverStateCardUp={hoverStateCardUp}
+                    setHoverStateCardUp={setHoverStateCardUp}
+                    setSelectedCard={setSelectedCard}
+                    unsetSelectedCard={unsetSelectedCard}
+                    setShowCoachTip={setShowCoachTip}
+                  />
+                ))
+              }
+               <CheckConfirm 
+                  isActive={showCheckConfirm} 
+                  isSelected={false} 
+                  text={"Done?"}
+                  //setIsExiting={false}
                 />
-              ))
-            }
+            </div>
+           
           </div>
-        </div>
-          
+         
         </div>
       </div>
       <button onClick={() => reset()} style={{position: "fixed", right:"0px", zIndex:20002}}>Reset</button>

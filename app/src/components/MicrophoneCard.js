@@ -12,7 +12,7 @@ function MicrophoneCard(props) {
   const log = useContext(LogContext);
   const [micActive, setMicActive] = useState(false);
   const [alignLeft, setAlignLeft] = useState(false);
-  const [micAnimation, setMicAnimation] = useState('active');
+  //const [micAnimation, setMicAnimation] = useState('active');
   const [animationCardMain, setAnimationCardMain] = useState('inactive');
   
   const variantsCardMain = {
@@ -90,22 +90,22 @@ function MicrophoneCard(props) {
     });
   
     setTimeout(() => {
+      if (props.showCoachTip == null) props.setShowCoachTip("palm_and_move");
       setAlignLeft(true);
     }, (spans.length + 3) * 120);
   }
 
   recognition.onstart = () => {
-    console.log('Recognition is ready and listening has started.');
+    console.log('recognition.onstart');
   };
 
   recognition.onend = () => {
     recognition.stop();
+    setMicActive(false);
     if (props.transcription.length < 1) {
-      props.setIsActive(false);
-      setMicActive(false);
+      props.setIsActive(false); 
     } else {
       props.setTranscription(props.transcription);
-      setMicActive(false);
       queryLLM();
     }
   };
@@ -134,7 +134,6 @@ function MicrophoneCard(props) {
       recognition.start();
       setMicActive(true);
       setAlignLeft(false);
-      
     } else {
       recognition.stop();
     }
@@ -143,6 +142,7 @@ function MicrophoneCard(props) {
   useEffect(() => {
     if (alignLeft) {
       setAnimationCardMain("left");
+      props.setShowCheckConfirm(true);
     } 
   }, [alignLeft]);
   
@@ -152,14 +152,7 @@ function MicrophoneCard(props) {
       animate={animationCardMain}
       variants={variantsCardMain}
       onAnimationComplete={() => {
-        console.log("**************");
-        console.log("animationCardMain ", animationCardMain);
-        console.log("props.showCard ", props.showCard);
-        console.log("props.isActive ", props.isActive);
-        console.log("micActive ", micActive);
-
         if (animationCardMain == "leftInactive" && !props.showCard && !props.isActive && !micActive) {
-          console.log("!!resetting animationCardMain");
           setAnimationCardMain("reset");
         } else if (animationCardMain == "left" && props.showCard && props.isActive) {
           props.setShowResponseCards(true);
@@ -183,7 +176,7 @@ function MicrophoneCard(props) {
           { (props.transcription.length > 0) ? 
             formatTranscription(props.transcription) 
             : 
-            "What do you want to cook?" }<span className="material-icons" 
+            "What do you want to cook? (e.g., \"Tacos\")" }<span className="material-icons" 
             style={{ 
               fontSize: "20px",
               fontWeight: "700", 
