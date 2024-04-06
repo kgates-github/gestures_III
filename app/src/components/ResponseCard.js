@@ -6,6 +6,7 @@ function ReponseCard(props) {
   const log = useContext(LogContext);
   const [isUnfurled, setIsUnfurled] = useState(false);
   const [inSelectedState, setInselectedState] = useState(false);
+  const [readyForSelection, setReadyForSelection] = useState(false);
   
   const variantsCardMain = {
     active: { 
@@ -26,43 +27,45 @@ function ReponseCard(props) {
   const variantsCardInner = {
     active: { 
       y: -274, 
-      //opacity: 0,
       transition: { duration: 0.4, ease: 'backOut' }
     },
-    inactive: { 
+    isSelectedFalse: { 
       y: -274,
-      //opacity: 0,
-      transition: { duration: 0.4, ease: 'easeOut' }
+      transition: { duration: 0.2, ease: 'easeOut' }
     },
-    isHovered: {  
-      y: -284,
-      //opacity: 0,
-      transition: { duration: 0.4, ease: 'easeOut' }
+    isSelectedTrue: {
+      y: -332,
+      transition: { duration: 0.2, ease: 'backOut',}
     },
-    isChecked: {
-      y: -314,
-      //opacity: 0,
-      transition: { duration: 0.3, ease: 'backOut',}
-    },
-    isGripped: {
-      rotate: 3,
-      //opacity: 0,
+    isGrippedSelectedFalse: {
+      rotate: 2,
+      y: -264,
       transition: { duration: 0.3, ease: 'backOut' }
-    }
+    },
+    isGrippedSelectedTrue: {
+      rotate: 2,
+      y: -332,
+      transition: { duration: 0.3, ease: 'backOut' }
+    },
   }
 
   const variantsCardHint = {
-    activeUp: { 
+    activeDown: { 
       y: 220,
       opacity: 1,
       transition: { duration: 0.4, ease: 'backOut' }
     },
-    activeDown: { 
+    activeUp: { 
       y: 278,
       opacity: 1,
       transition: { duration: 0.4, ease: 'backOut' }
     },
-    inactive: { 
+    inactiveUp: { 
+      y: 220,
+      opacity: 0,
+      transition: { duration: 0.4, ease: 'backOut' }
+    },
+    inactiveDown: { 
       y: 278,
       opacity: 0,
       transition: { duration: 0.4, ease: 'backOut' }
@@ -70,20 +73,25 @@ function ReponseCard(props) {
   }
 
   const variantsHintArrow = {
-    activeUp: { 
+    activeDown: { 
       y: -230,
       opacity: 1,
-      transition: { duration: 0.6, ease: 'easeOut' }
+      transition: { duration: 0.4, ease: 'easeOut' }
     },
-    activeDown: { 
-      y: 182, // -230
-      opacity: 1,
-      transition: { duration: 0.6, ease: 'easeOut' }
-    },
-    inactive: { 
-      y: 0,
+    inactiveDown: { 
+      y: -190,
       opacity: 0,
       transition: { duration: 0.4, ease: 'easeOut' }
+    },
+    inactiveUp: { 
+      y: 142,
+      opacity: 0,
+      transition: { duration: 0.4, ease: 'easeOut' }
+    },
+    activeUp: { 
+      y: 0,
+      opacity: 1,
+      transition: { duration: 0.6, ease: 'easeOut' }
     },
     isChecked: {
       opacity: 0,
@@ -147,7 +155,34 @@ function ReponseCard(props) {
     props.setShowCoachTip(null)
   }, [props.data, setInselectedState, inSelectedState]);
 
-  
+  useEffect(() => {
+    console.log("----------------")
+    console.log("- readyForSelection: " + readyForSelection)
+    console.log("- props.readyForSelection: " + props.readyForSelection)
+    console.log("- props.isGripped " + props.inGripState)
+    console.log("- props.data.isSelected " + props.data.isSelected)
+    console.log("----------------")
+
+    if (props.readyForSelection && !readyForSelection && props.inGripState) {
+      // If card is not ready for selection, but is gripped and in hover state, set ready for selection
+      // When user releases grip and is in hover state, select the card
+      setReadyForSelection(true)
+      console.log("1 Set ready for selection")
+    } else if (readyForSelection && !props.inGripState && !props.data.isSelected) {
+      // If card is ready for selection, but is not gripped and in hover state, select the card
+      // This captures the user releasing the  grip
+      props.setSelectedCard(props.data.id)
+      setReadyForSelection(false)
+      console.log("2 Set selected")
+
+    } else if (readyForSelection && !props.inGripState && props.data.isSelected) {
+      // Card is already selected, grip released, unselect card
+      props.unsetSelectedCard(props.data.id)
+      setReadyForSelection(false)
+    }
+  }, [props.inGripState, props.data.isSelected]);
+
+
   return (
     <>
     <motion.div 
@@ -170,10 +205,10 @@ function ReponseCard(props) {
       <motion.div 
         className="response_card_hint"
         animate={() => {
-          if (!inSelectedState) {
-            return (props.inHoverState && props.inGripState) ? "activeUp" : "inactive";
+          if (!props.data.isSelected) {
+            return props.inHoverState ? "activeDown" : "inactiveDown";
           } else {
-            return (props.inHoverState && props.inGripState) ? "activeDown" : "inactive";
+            return props.inHoverState ? "activeUp" : "inactiveUp";
           }
         }}
         variants={variantsCardHint}
@@ -189,29 +224,16 @@ function ReponseCard(props) {
       </motion.div>
       <motion.div 
         animate={() => {
-          if (!inSelectedState) {
-            return (props.inHoverState && props.inGripState) ? "activeUp" : "inactive";
+          if (!props.data.isSelected ) {
+            return props.inHoverState ? "activeDown" : "inactiveDown";
           } else {
-            return (props.inHoverState && props.inGripState) ? "activeDown" : "inactive";
+            return props.inHoverState ? "activeUp" : "inactiveUp";
           }
         }}
         variants={variantsHintArrow}
         initial="active"
         onAnimationComplete={() => {
-          //props.inHoverState && props.inGripState && props.isChecked
-          if (props.inHoverState && props.inGripState) {
-            setTimeout(() => {
-              if (inSelectedState) {
-                props.setHoverStateCardUp(false)
-                props.unsetSelectedCard(props.data.id)
-                setInselectedState(false);
-              } else {
-                props.setHoverStateCardUp(true)
-                props.setSelectedCard(props.data.id)
-                setInselectedState(true);
-              }
-            }, 500);
-          }
+          
         }}
         style={{
           width:"100%", 
@@ -228,21 +250,18 @@ function ReponseCard(props) {
       <motion.div 
         className="response_card" 
         animate={() => {
-          if (!inSelectedState) {
-            if (props.inHoverState && props.inGripState && props.isChecked) {
-              return "isChecked"
-            }
+          if (props.data.isSelected) {
             if (props.inHoverState && props.inGripState) {
-              return "isGripped"
+              return "isGrippedSelectedTrue"
             }
-            if (props.inHoverState) {
-              return "isHovered"
-            }
-            // If we get through all the above cases, we are in the default state
-            return props.isActive ? "active" : "inactive";
+            return "isSelectedTrue"
           } else {
-            return "isChecked"
+            if (props.inHoverState && props.inGripState) {
+              return "isGrippedSelectedFalse"
+            }
+            return "isSelectedFalse"
           }
+          return props.isActive ? "active" : "inactive";
         }}
         variants={variantsCardInner}
         initial="inactive"
@@ -263,7 +282,7 @@ function ReponseCard(props) {
               variants={checkVariants}
               initial="inactive"
               transform="scale(0.6) translate(-10, -10)"
-              animate={props.isChecked && props.inHoverState && props.inGripState || inSelectedState ? 'active' : 'inactive'}
+              animate={props.data.isSelected ? 'active' : 'inactive'}
               onAnimationComplete={() => {
                 
               }}

@@ -111,6 +111,7 @@ function MicrophoneCard(props) {
   };
   
   recognition.onresult = event => {
+    console.log('recognition.onresult')
     const transcript = event.results[0][0].transcript;
     props.setTranscription(transcript.charAt(0).toUpperCase() + transcript.slice(1));
   };

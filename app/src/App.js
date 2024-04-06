@@ -3,7 +3,7 @@ import GestureCapturer from './components/GestureCapturer';
 import Log from './components/Log';
 import React, { useState } from 'react';
 import { LogContext } from './components/LogContext';
-import Assistant from './components/Assistant';
+import Assistant from './components/AssistantNew';
 
 function App() {
   const userAgent = navigator.userAgent;
@@ -49,7 +49,7 @@ function App() {
           </div>
           <div style={{flex:1}}></div>
         </div>
-        {isLoaded ? <Assistant 
+        {isLoaded ? <Assistant
           subscribe={subscribe} 
           unsubscribe={unsubscribe} 
           setIntroDisplay={setIntroDisplay}/> : null}

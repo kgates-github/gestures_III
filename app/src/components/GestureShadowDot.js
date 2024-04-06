@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { motion } from "framer-motion"
 import { LogContext } from './LogContext';
 
@@ -6,6 +6,10 @@ import { LogContext } from './LogContext';
 function GestureShadowDot(props) {
   const log = useContext(LogContext);
 
+  useEffect(() => {
+    console.log('GestureShadowDot props.showShadowDot:', props.showShadowDot);
+  }, [props.showShadowDot]);
+  
   return (
     <motion.div
       style={{
@@ -13,7 +17,7 @@ function GestureShadowDot(props) {
         height: 30,
         borderRadius: "50%",
         background: "#000",
-        opacity: 0.3,
+        opacity: props.showShadowDot ? 0.3 : 0,
         filter: 'blur(10px)',
         position: "absolute",
         x: props.x,

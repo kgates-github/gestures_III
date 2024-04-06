@@ -9,13 +9,13 @@ function CheckConfirm(props) {
   const variantsConfirm = {
     active: { 
       opacity: 1, 
-      y: 0,
+      y: -30,
       x:-130,
       transition: { duration: 0.4, ease: 'easeOut', delay: 0.8 }
     },
     inactive: { 
       opacity: 0, 
-      y: 0,
+      y: -30,
       x:-160,
       transition: { duration: 0.4, ease: 'easeOut', delay: 0.8 }
     },

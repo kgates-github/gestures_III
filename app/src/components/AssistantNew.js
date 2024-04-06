@@ -6,7 +6,6 @@ import CoachTip from './CoachTip';
 import GestureShadowDot from './GestureShadowDot';
 import CheckConfirm from './CheckConfirm';
 import { motion, useMotionValue } from "framer-motion"
-//import LLMHandler from './LLMHandler';
 
 const initialFakeResponseData = [
   {
@@ -43,22 +42,18 @@ function Assistant(props) {
   const log = useContext(LogContext);
 
   // States
+  const [fakeResponseData, setFakeResponseData] = useState(initialFakeResponseData);
   const [transcription, setTranscription] = useState(""); // "I want to make veggie burgers"
   const [isActive, setIsActive] = useState(false);
   const [showCoachTip, setShowCoachTip] = useState(null); // Whether to show coach tip
   const [showResponseCards, setShowResponseCards] = useState(false);
-  
   const [isInSelectionMode, setIsInSelectionMode] = useState(false);
-  const [fakeResponseData, setFakeResponseData] = useState(initialFakeResponseData);
   const [inHoverStateCard, setInHoverStateCard] = useState(null);
   const [inGripStateCard, setInGripStateCard] = useState(null);
-  const [hoverStateCardUp, setHoverStateCardUp] = useState(false);
   const [grabCardShown,   setGrabCardShown] = useState(false);
   const [showShadowDot, setShowShadowDot] = useState(false);
   const [showCheckConfirm, setShowCheckConfirm] = useState(false);
-  //const [userInput, setUserInput] = useState('');
-  //const [LLMIsLoaded, setLLMIsLoaded] = useState(false);
- 
+
   // Refs
   const transcriptionRef = useRef(transcription);
   const xCoords = useRef({});
@@ -74,7 +69,6 @@ function Assistant(props) {
     setIsInSelectionMode(false);
     setInHoverStateCard(null);
     setInGripStateCard(null);
-    setHoverStateCardUp(false);
   }
 
   /****************************************
@@ -82,7 +76,7 @@ function Assistant(props) {
   *****************************************/
 
   const setSelectedCard = (id) => {
-    console.log('setSelectedCard')
+    //console.log('setSelectedCard')
     const newFakeResponseData = fakeResponseData.map((item) => {   
       if (item.id == id) {  
         item.isSelected = true;
@@ -90,10 +84,11 @@ function Assistant(props) {
       return item;
     });
     setFakeResponseData(newFakeResponseData);
+    setShowCoachTip(null)
   }  
   
   const unsetSelectedCard = (id) => {
-    console.log('unsetSelectedCard')
+    //console.log('unsetSelectedCard')
     const newFakeResponseData = fakeResponseData.map((item) => {   
       if (item.id == id) {  
         item.isSelected = false;
@@ -102,14 +97,14 @@ function Assistant(props) {
     });
     //setFakeResponseData(newFakeResponseData);
   }  
-  
+
   /****************************************
     GestureShadowDot
   *****************************************/
 
-  const x = useMotionValue(0);
+  const x = useMotionValue(-100);
   const y = useMotionValue(0);
-  const anchor_x = useRef(0);
+  const anchor_x = useRef(-1000);
   const anchor_y = useRef(0);
   let new_x = 0;
 
@@ -125,34 +120,35 @@ function Assistant(props) {
   *****************************************/
 
   const handleOpenPalm = (e) => {
-    console.log('handleOpenPalm ' + isActive + " " + e.detail.handedness);
+    //console.log('handleOpenPalm ' + isActive + " " + e.detail.handedness);
     props.subscribe("No_Gesture", handleNoGesture);
 
     // Reset grip state
     setInGripStateCard(null);
+    setShowShadowDot(true);
     y.set(window.innerHeight / 2 - 80); // Reset y when engaging cards
 
     if (isInSelectionMode) { 
       props.subscribe("Hand_Coords",  (e) => handleGestureXY(e, inGripStateCard));
-      setShowShadowDot(true);
     }
     
-    // Anchor the x position for x calculations
-    anchor_x.current = e.detail.x;
+    // Anchor the x position for x calculations if not already set
+    if (anchor_x.current < -100) anchor_x.current = e.detail.x;
     setIsActive(true);
   }
 
   const handleNoGesture = (e) => {
-    console.log('handleNoGesture');
-
     setShowShadowDot(false);
+    setInHoverStateCard(null);
+
+    anchor_x.current = -1000;
     props.unsubscribe("Hand_Coords", handleGestureXY);
     props.unsubscribe("Closed_Fist", (e) => handleClosedFist(e, inHoverStateCard));
 
     if (transcriptionRef.current.length < 1) {
       setIsActive(false);
     } else if (transcriptionRef.current.length > 0) {
-      props.unsubscribe("No_Gesture", handleNoGesture);
+      //props.unsubscribe("No_Gesture", handleNoGesture);
     } else {
       setIsActive(false);
       setTimeout(() => {
@@ -162,7 +158,7 @@ function Assistant(props) {
   }
 
   const handleClosedFist = (e, inHoverStateCard) => {
-    console.log('handleClosedFist');
+    //console.log('handleClosedFist');
 
     anchor_y.current = e.detail.y;
     if (inHoverStateCard != null) {
@@ -171,38 +167,23 @@ function Assistant(props) {
   }
 
   const handleGestureXY = (e, inGripStateCard) => {
-    console.log('handleGestureXY');
-
     // Handle x movement
-    
-      new_x = window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x.current)) * 3;
-      x.set(new_x);
+    new_x = window.innerWidth / 2 - (window.innerWidth * (e.detail.x - anchor_x.current)) * 3;
+    x.set(new_x);
 
-      // Detect card hits
+    // Detect if new_x is not over a card
+    if (new_x < cardBounds.current.x0 || new_x > cardBounds.current.x1) {
+      setInHoverStateCard(null);
+      //console.log('handleGestureXY no card hit');
+    } else {
+      // Detect card hit
       Object.entries(xCoords.current).forEach(([id, item]) => {
         if (new_x > item.x0 && new_x < item.x1) {
           if (inHoverStateCard != id) setInHoverStateCard(id);
+          //log('handleGestureXY card hit');
         }
       });
-      if (new_x < cardBounds.current.x0 || new_x > cardBounds.current.x1) {
-        setInHoverStateCard(null);
-      }
-    
-
-    // Handle y movement
-    /*
-    y.set(window.innerHeight / 2 - 80);
-
-    if (e.detail.y < anchor_y.current - 0.1) {
-      if (!hoverStateCardUp) {
-        setHoverStateCardUp(true)
-      }
-    } else if (e.detail.y > anchor_y.current + 0.1) {
-      if (hoverStateCardUp) {
-        setHoverStateCardUp(false)
-      }
     }
-    */
   }
 
   /****************************************
@@ -211,7 +192,7 @@ function Assistant(props) {
     
   useEffect(() => {
     if (isInSelectionMode) {
-      setShowShadowDot(true);
+      x.set(-100); // Efftectively hide the shadow dot
       props.subscribe("Hand_Coords", (e) => handleGestureXY(e, inGripStateCard)); 
       props.subscribe("Closed_Fist", (e) => handleClosedFist(e, inHoverStateCard));
     }
@@ -231,10 +212,10 @@ function Assistant(props) {
     
     // Open_Palm opens dialog, no gesture closes dialog 
     props.subscribe("Open_Palm", handleOpenPalm);
-   
+    
     return () => {
-      props.unsubscribe("Open_Palm", handleOpenPalm);
-      props.unsubscribe("No_Gesture", handleNoGesture);
+      //props.unsubscribe("Open_Palm", handleOpenPalm);
+      //props.unsubscribe("No_Gesture", handleNoGesture);
     }
   }, []);
 
@@ -249,7 +230,7 @@ function Assistant(props) {
   }, [transcription]);
 
   useEffect(() => {
-    console.log('useEffect inGripStateCard', inGripStateCard)
+    //console.log('useEffect inGripStateCard', inGripStateCard)
   }, [inGripStateCard]);
 
   useEffect(() => {
@@ -259,15 +240,11 @@ function Assistant(props) {
     } 
   }, [inHoverStateCard]);
 
-  
 
   return (
     <>
-      {/*<LLMHandler setLLMIsLoaded={setLLMIsLoaded} LLMIsLoaded={LLMIsLoaded} userInput={userInput} />*/}
-
-      {showShadowDot && <GestureShadowDot x={x} y={y} />}
-        
-
+      <GestureShadowDot x={x} y={y} showShadowDot={showShadowDot} />
+      
       <CoachTip 
         image={"icon_palm_open"} 
         text1={''}
@@ -281,7 +258,7 @@ function Assistant(props) {
       />
       <CoachTip 
         image={"palm_to_grip"} 
-        text2={"Grab and release to select"}
+        text2={"Grab and release to select / unselect"}
         showCoachTip={showCoachTip == "grab_card"}
       />
       
@@ -340,9 +317,7 @@ function Assistant(props) {
                     registerCardXCoords={registerCardXCoords}
                     inHoverState={inHoverStateCard == item.id}
                     inGripState={inGripStateCard == item.id}
-                    isChecked={inHoverStateCard == item.id && hoverStateCardUp}
-                    hoverStateCardUp={hoverStateCardUp}
-                    setHoverStateCardUp={setHoverStateCardUp}
+                    readyForSelection={inHoverStateCard == item.id && inGripStateCard == item.id}
                     setSelectedCard={setSelectedCard}
                     unsetSelectedCard={unsetSelectedCard}
                     setShowCoachTip={setShowCoachTip}
@@ -367,4 +342,3 @@ function Assistant(props) {
 }
 
 export default Assistant;
-
