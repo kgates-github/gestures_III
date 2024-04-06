@@ -54,7 +54,7 @@ function Assistant(props) {
   const [showShadowDot, setShowShadowDot] = useState(false);
   const [showCheckConfirm, setShowCheckConfirm] = useState(false);
   const [isDone, setIsDone] = useState(false);  
-  const [notificationData, setNotificationData] = useState(null);
+  const [notificationData, setNotificationData] = useState([]);
 
   // To do: end animation for check, set closing animation to true
   // run animations, when last in done, call showResults, then reset
@@ -108,7 +108,10 @@ function Assistant(props) {
     setShowCheckConfirm(false);
     setIsDone(false);
     anchor_x.current = -1000;
-    console.log(showCoachTip)
+
+    setNotificationData(
+      fakeResponseData.filter((item) => item.isSelected).map((item) => item.name)
+    )
   }
 
   /****************************************
@@ -302,7 +305,7 @@ function Assistant(props) {
         showCoachTip={showCoachTip == "intro"}
       />
       <CoachTip 
-        image={"palm_and_move"} 
+        image={"palm_and_move"}
         text2={"Move your hand"}
         showCoachTip={showCoachTip == "palm_and_move"}
       />
@@ -311,6 +314,22 @@ function Assistant(props) {
         text2={"Grab and release to select / unselect"}
         showCoachTip={showCoachTip == "grab_card"}
       />
+
+      <div className="outerContainer" style={{ 
+        position: "fixed", 
+        zIndex:10,
+        top: "0px",
+        display: "flex",
+        flexDirection: "column", 
+        alignItems: "center",
+        justifyContent: "center",
+      }}>
+          {
+            notificationData.map((item, index) => (
+              <div>{item}</div>
+            ))
+          }
+      </div>
       
       <div className="outerContainer" style={{ 
         position: "fixed", 
