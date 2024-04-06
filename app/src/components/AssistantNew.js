@@ -43,21 +43,42 @@ function Assistant(props) {
 
   // States
   const [fakeResponseData, setFakeResponseData] = useState(initialFakeResponseData);
-  const [transcription, setTranscription] = useState(""); // "I want to make veggie burgers"
+  const [transcription, setTranscription] = useState("");
   const [isActive, setIsActive] = useState(false);
   const [showCoachTip, setShowCoachTip] = useState(null); // Whether to show coach tip
   const [showResponseCards, setShowResponseCards] = useState(false);
   const [isInSelectionMode, setIsInSelectionMode] = useState(false);
   const [inHoverStateCard, setInHoverStateCard] = useState(null);
   const [inGripStateCard, setInGripStateCard] = useState(null);
-  const [grabCardShown,   setGrabCardShown] = useState(false);
+  const [grabCardShown,  setGrabCardShown] = useState(false);
   const [showShadowDot, setShowShadowDot] = useState(false);
   const [showCheckConfirm, setShowCheckConfirm] = useState(false);
+  const [isDone, setIsDone] = useState(false);  
+  const [notificationData, setNotificationData] = useState(null);
+
+  // To do: end animation for check, set closing animation to true
+  // run animations, when last in done, call showResults, then reset
+  // everything except the notification
+  const [dialogAnimation, setDialogAnimation] = useState('dormant');
 
   // Refs
   const transcriptionRef = useRef(transcription);
   const xCoords = useRef({});
   const cardBounds = useRef({x0: 0, x1: 0});
+
+  // Variants
+  const variantsDialog = {
+    dormant: {
+      opacity: 0,
+    },
+    ready: {
+      opacity: 1,
+    },
+    exit: {
+      opacity: 0,
+      transition: { duration: 0.3, ease: 'easeInOut' }
+    }
+  }
 
   const reset = () => {
     setTranscription('');
@@ -69,6 +90,25 @@ function Assistant(props) {
     setIsInSelectionMode(false);
     setInHoverStateCard(null);
     setInGripStateCard(null);
+    setShowCheckConfirm(false);
+    setIsDone(false);
+    anchor_x.current = -1000;
+  }
+
+  const handleCheckConfirm = () => {
+    setTranscription('');
+    //setFakeResponseData(initialFakeResponseData);
+    setShowShadowDot(false);
+    setIsActive(false);
+    setShowCoachTip("intro");
+    setShowResponseCards(false);
+    setIsInSelectionMode(false);
+    setInHoverStateCard(null);
+    setInGripStateCard(null);
+    setShowCheckConfirm(false);
+    setIsDone(false);
+    anchor_x.current = -1000;
+    console.log(showCoachTip)
   }
 
   /****************************************
@@ -95,7 +135,7 @@ function Assistant(props) {
       }
       return item;
     });
-    //setFakeResponseData(newFakeResponseData);
+    setFakeResponseData(newFakeResponseData);
   }  
 
   /****************************************
@@ -119,22 +159,25 @@ function Assistant(props) {
     Gesture Handlers
   *****************************************/
 
-  const handleOpenPalm = (e) => {
-    //console.log('handleOpenPalm ' + isActive + " " + e.detail.handedness);
+  const handleOpenPalm = (e, isInSelectionMode) => {
+    //console.log('handleOpenPalm isInSelectionMode' + isInSelectionMode);
     props.subscribe("No_Gesture", handleNoGesture);
 
     // Reset grip state
     setInGripStateCard(null);
-    setShowShadowDot(true);
     y.set(window.innerHeight / 2 - 80); // Reset y when engaging cards
 
     if (isInSelectionMode) { 
       props.subscribe("Hand_Coords",  (e) => handleGestureXY(e, inGripStateCard));
+      setShowShadowDot(true);
+    } else {
+      setShowShadowDot(false);
     }
     
     // Anchor the x position for x calculations if not already set
     if (anchor_x.current < -100) anchor_x.current = e.detail.x;
     setIsActive(true);
+    setDialogAnimation('ready');
   }
 
   const handleNoGesture = (e) => {
@@ -157,9 +200,11 @@ function Assistant(props) {
     }
   }
 
-  const handleClosedFist = (e, inHoverStateCard) => {
-    //console.log('handleClosedFist');
+  const handleThumbUp = () => {
+    setIsDone(true);
+  }
 
+  const handleClosedFist = (e, inHoverStateCard) => {
     anchor_y.current = e.detail.y;
     if (inHoverStateCard != null) {
       setInGripStateCard(inHoverStateCard);
@@ -199,6 +244,10 @@ function Assistant(props) {
   }, [isInSelectionMode, inHoverStateCard, inGripStateCard]);
 
   useEffect(() => {
+    props.subscribe("Open_Palm", (e) => handleOpenPalm(e, isInSelectionMode));
+  }, [isInSelectionMode]);
+
+  useEffect(() => {
     const newXCoords = {};
     initialFakeResponseData.forEach((item, index) => {
       newXCoords[item.id] = { x0: 0, x1: 0 }
@@ -211,7 +260,8 @@ function Assistant(props) {
     setIsActive(false);
     
     // Open_Palm opens dialog, no gesture closes dialog 
-    props.subscribe("Open_Palm", handleOpenPalm);
+    props.subscribe("Open_Palm", (e) => handleOpenPalm(e, isInSelectionMode));
+    props.subscribe("Thumb_Up", handleThumbUp);
     
     return () => {
       //props.unsubscribe("Open_Palm", handleOpenPalm);
@@ -274,7 +324,17 @@ function Assistant(props) {
           animal={animal} 
         />
         */}
-        <div id="innerContainer">
+        <motion.div id="innerContainer"
+          variants={variantsDialog}
+          animate={dialogAnimation}
+          onAnimationComplete={() => {
+            if (dialogAnimation == 'exit') {
+              setDialogAnimation('dormant');
+              handleCheckConfirm(); // Handle in put and reset everything
+            }
+          }}
+          initial="dormant"
+        >
           <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"40px"}}>
             <motion.div
               className="dialog"
@@ -289,6 +349,7 @@ function Assistant(props) {
                 transcription={transcription} 
                 setTranscription={setTranscription}
                 setShowCoachTip={setShowCoachTip}
+                setShowShadowDot={setShowShadowDot}
                 showCoachTip={showCoachTip}
                 handleNoGesture={handleNoGesture}
                 setShowResponseCards={setShowResponseCards}
@@ -326,15 +387,17 @@ function Assistant(props) {
               }
                <CheckConfirm 
                   isActive={showCheckConfirm} 
-                  isSelected={false} 
+                  isDone={isDone} 
                   text={"Done?"}
+                  handleCheckConfirm={handleCheckConfirm}
+                  setDialogAnimation={setDialogAnimation}
                   //setIsExiting={false}
                 />
             </div>
            
           </div>
          
-        </div>
+        </motion.div>
       </div>
       <button onClick={() => reset()} style={{position: "fixed", right:"0px", zIndex:20002}}>Reset</button>
     </>

@@ -31,7 +31,7 @@ function ReponseCard(props) {
     },
     isSelectedFalse: { 
       y: -274,
-      transition: { duration: 0.2, ease: 'easeOut' }
+      transition: { duration: 0.2, ease: 'backOut' }
     },
     isSelectedTrue: {
       y: -332,
@@ -156,12 +156,12 @@ function ReponseCard(props) {
   }, [props.data, setInselectedState, inSelectedState]);
 
   useEffect(() => {
-    console.log("----------------")
+    /*console.log("----------------")
     console.log("- readyForSelection: " + readyForSelection)
     console.log("- props.readyForSelection: " + props.readyForSelection)
     console.log("- props.isGripped " + props.inGripState)
     console.log("- props.data.isSelected " + props.data.isSelected)
-    console.log("----------------")
+    console.log("----------------")*/
 
     if (props.readyForSelection && !readyForSelection && props.inGripState) {
       // If card is not ready for selection, but is gripped and in hover state, set ready for selection

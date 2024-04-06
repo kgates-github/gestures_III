@@ -14,6 +14,9 @@ function MicrophoneCard(props) {
   const [alignLeft, setAlignLeft] = useState(false);
   //const [micAnimation, setMicAnimation] = useState('active');
   const [animationCardMain, setAnimationCardMain] = useState('inactive');
+
+  // Track mic is on
+  let recognitionIsStarted = false;
   
   const variantsCardMain = {
     active:    { 
@@ -92,6 +95,7 @@ function MicrophoneCard(props) {
     setTimeout(() => {
       if (props.showCoachTip == null) props.setShowCoachTip("palm_and_move");
       setAlignLeft(true);
+      props.setShowShadowDot(true);
     }, (spans.length + 3) * 120);
   }
 
@@ -101,6 +105,7 @@ function MicrophoneCard(props) {
 
   recognition.onend = () => {
     recognition.stop();
+    recognitionIsStarted = false;
     setMicActive(false);
     if (props.transcription.length < 1) {
       props.setIsActive(false); 
@@ -129,10 +134,9 @@ function MicrophoneCard(props) {
   }, [props.showCard]);
 
   useEffect(() => {
-    recognition.stop();
-
-    if (props.isActive) {
+    if (props.isActive && !recognitionIsStarted) {
       recognition.start();
+      recognitionIsStarted = true;
       setMicActive(true);
       setAlignLeft(false);
     } else {

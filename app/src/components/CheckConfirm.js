@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { motion } from "framer-motion"
 import { LogContext } from './LogContext';
 
@@ -19,6 +19,12 @@ function CheckConfirm(props) {
       x:-160,
       transition: { duration: 0.4, ease: 'easeOut', delay: 0.8 }
     },
+    exit: {
+      opacity: 0, 
+      y: -30,
+      x:-160,
+      transition: { duration: 0.4, ease: 'easeOut' }
+    }
   }
 
   const circleVariants = {
@@ -33,7 +39,7 @@ function CheckConfirm(props) {
 
   return (
     <motion.div
-      animate={(props.isActive) ? 'active' : 'inactive'}
+      animate={props.isActive ? 'active' : 'inactive'}
       variants={variantsConfirm}
       initial="inactive"
       style={{
@@ -65,25 +71,25 @@ function CheckConfirm(props) {
         <motion.path
           d="M 43, 43 m -28.5, 0 a 28.5,28.5 0 1,0 57,0 a 28.5,28.5 0 1,0 -57,0"
           fill="transparent"
-          strokeWidth="6"
+          strokeWidth="8"
           stroke="#0FD446"
           variants={circleVariants}
           initial="inactive"
-          animate={props.isSelected ? 'active' : 'inactive'}
+          animate={props.isDone ? 'active' : 'inactive'}
           transition={{ duration: 0.5, ease: 'easeOut' }} 
         />
         <motion.path
           d="M15 29L25 38L40 19"
           fill="transparent"
-          strokeWidth="6"
+          strokeWidth="8"
           stroke="#0FD446"
           variants={checkVariants}
           initial="inactive"
           transform="translate(15, 15.5)"
-          animate={props.isSelected ? 'active' : 'inactive'}
+          animate={props.isDone ? 'active' : 'inactive'}
           transition={{ duration: 0.2, ease: 'easeOut', delay: 0.4 }} 
           onAnimationComplete={() => {
-            //props.setIsExiting(true)
+            props.setDialogAnimation('exit')
           }}
         />
       </svg>
@@ -95,7 +101,7 @@ function CheckConfirm(props) {
           width:'50px', height:'50px', marginTop:'8px', marginLeft:'2px'
         }}
         initial={{ opacity: 1 }}
-        animate={props.isSelected ? { opacity: 0 } : { opacity: 1 }}
+        animate={props.isDone ? { opacity: 0 } : { opacity: 1 }}
         transition={{ delay: 0, duration: 0.4 }}
       />
 
