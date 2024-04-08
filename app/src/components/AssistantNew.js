@@ -329,8 +329,8 @@ function Assistant(props) {
               <motion.div
                 key={index}
                 animate={{ opacity: 1, y: 0, ease: 'easeOut'}}
-                initial={{ opacity: 0, y: 20,ease: 'easeOut' }}
-                transition={{ duration: 0.3, delay: index * 0.2, }}
+                initial={{ opacity: 0, y: 10,ease: 'easeOut' }}
+                transition={{ duration: 0.2, delay: index * 0.2, }}
               >
                 {item}
               </motion.div>
@@ -402,9 +402,9 @@ function Assistant(props) {
                     translateX={-210 + index * -350}
                     isActive={showResponseCards}
                     registerCardXCoords={registerCardXCoords}
-                    inHoverState={inHoverStateCard == item.id}
+                    inHoverState={inHoverStateCard == item.id && !isDone}
                     inGripState={inGripStateCard == item.id}
-                    readyForSelection={inHoverStateCard == item.id && inGripStateCard == item.id}
+                    readyForSelection={inHoverStateCard == item.id && inGripStateCard == item.id && !isDone}
                     setSelectedCard={setSelectedCard}
                     unsetSelectedCard={unsetSelectedCard}
                     setShowCoachTip={setShowCoachTip}

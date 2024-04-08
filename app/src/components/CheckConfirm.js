@@ -72,7 +72,7 @@ function CheckConfirm(props) {
           d="M 43, 43 m -28.5, 0 a 28.5,28.5 0 1,0 57,0 a 28.5,28.5 0 1,0 -57,0"
           fill="transparent"
           strokeWidth="8"
-          stroke="#0FD446"
+          stroke="#0CC62A"
           variants={circleVariants}
           initial="inactive"
           animate={props.isDone ? 'active' : 'inactive'}
@@ -82,7 +82,7 @@ function CheckConfirm(props) {
           d="M15 29L25 38L40 19"
           fill="transparent"
           strokeWidth="8"
-          stroke="#0FD446"
+          stroke="#0CC62A"
           variants={checkVariants}
           initial="inactive"
           transform="translate(15, 15.5)"

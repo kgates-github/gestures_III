@@ -95,7 +95,7 @@ function MicrophoneCard(props) {
     setTimeout(() => {
       if (props.showCoachTip == null) props.setShowCoachTip("palm_and_move");
       setAlignLeft(true);
-      props.setShowShadowDot(true);
+      
     }, (spans.length + 3) * 120);
   }
 
@@ -163,6 +163,7 @@ function MicrophoneCard(props) {
         } else if (animationCardMain == "left" && props.showCard && props.isActive) {
           props.setShowResponseCards(true);
           props.setIsInSelectionMode(true);
+          props.setShowShadowDot(true);
         }
       }}
       initial="inactive"

@@ -5,27 +5,26 @@ import { LogContext } from './LogContext';
 function MicrophoneIcon(props) {
   const log = useContext(LogContext);
   
-  
   const variants = {
     active:    { 
-      r: [30, 80],
-      stroke: ["#fff", "#ccc", "#fff"],
-      transition: { repeat: Infinity, duration: 1.5, delay: 0 }
+      r: [20, 60],
+      stroke: ["#fff", "#555", "#fff"],
+      transition: { repeat: Infinity, duration: 1.4, delay: 0 }
     },
     inactive: { 
-      r: 30,
+      r: 20,
       stroke: "#fff",
     },
   }
 
   const variants2 = {
     active:    { 
-      r: [30, 80],
-      stroke: ["#fff", "#ccc", "#fff"],
-      transition: { repeat: Infinity, duration: 1.5, delay: 0.75 }
+      r: [20, 60],
+      stroke: ["#fff", "#555", "#fff"],
+      transition: { repeat: Infinity, duration: 1.4, delay: 0.7 }
     },
     inactive: { 
-      r: 30,
+      r: 20,
       stroke: "#fff",
     },
   }
@@ -45,7 +44,7 @@ function MicrophoneIcon(props) {
           cx="80" 
           cy="80" 
           r="20" 
-          stroke="#555" 
+          stroke="#222" 
           strokeWidth="2" 
           fill="none" 
           animate={props.micActive ? "active" : "inactive"} 
@@ -55,7 +54,7 @@ function MicrophoneIcon(props) {
           cx="80" 
           cy="80" 
           r="20" 
-          stroke="#555" 
+          stroke="#222" 
           strokeWidth="2" 
           fill="none" 
           animate={props.micActive ? "active" : "inactive"} 
@@ -82,10 +81,10 @@ function MicrophoneIcon(props) {
             width: "60px",
             height: "60px",
             borderRadius: "50%", 
-            backgroundColor: "#666", 
+            backgroundColor: "none", 
           }}
         >
-          <span className="material-icons" style={{ fontSize: "36px", color: "#fff" }}>
+          <span className="material-icons" style={{ fontSize: "40px", color: "#222" }}>
             mic
           </span>
         </div>
