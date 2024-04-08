@@ -326,7 +326,14 @@ function Assistant(props) {
       }}>
           {
             notificationData.map((item, index) => (
-              <div>{item}</div>
+              <motion.div
+                key={index}
+                animate={{ opacity: 1, y: 0, ease: 'easeOut'}}
+                initial={{ opacity: 0, y: 20,ease: 'easeOut' }}
+                transition={{ duration: 0.3, delay: index * 0.2, }}
+              >
+                {item}
+              </motion.div>
             ))
           }
       </div>

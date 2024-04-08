@@ -271,7 +271,7 @@ function Assistant(props) {
       <CoachTip 
         image={"icon_palm_open"} 
         text1={''}
-        text2={'This prototype can help you find recipes. Raise your hand to start...'}
+        text2={'An assistant can help you find recipes. Just raise your hand...'}
         showCoachTip={showCoachTip == "intro"}
       />
       <CoachTip 
