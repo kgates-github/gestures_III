@@ -293,9 +293,30 @@ function Assistant(props) {
     } 
   }, [inHoverStateCard]);
 
+  //let w = 1250;
+  //let h = w * 9 / 16;
 
   return (
     <>
+      {/*<div style={{
+        position: "fixed", 
+        height:"100%", 
+        width:"100%", 
+        diplay:"flex", 
+        justifyContent:"center",
+        alignItems:"center",
+        opacity: "0"
+      }}>
+        <div style={{
+          width: w + "px", 
+          height: h + "px", 
+          border: "3px solid red", 
+          marginLeft: "auto",
+          marginRight: "auto",
+          position: "relative",
+          top: "200px",
+        }}></div>
+      </div>*/}
       <GestureShadowDot x={x} y={y} showShadowDot={showShadowDot} />
       
       <CoachTip 

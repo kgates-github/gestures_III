@@ -19,7 +19,7 @@ function ReponseCard(props) {
     inactive: { 
       y: 0,
       translateX: props.translateX,
-      opacity: 1,
+      opacity: 1, 
       transition: { duration: 0.4, ease: 'easeOut' }
     },
   }
