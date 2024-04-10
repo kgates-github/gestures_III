@@ -3,7 +3,7 @@ import GestureCapturer from './components/GestureCapturer';
 import Log from './components/Log';
 import React, { useState } from 'react';
 import { LogContext } from './components/LogContext';
-import Assistant from './components/AssistantNew';
+import Assistant from './components/Assistant';
 
 function App() {
   const userAgent = navigator.userAgent;

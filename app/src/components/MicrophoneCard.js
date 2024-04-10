@@ -92,10 +92,12 @@ function MicrophoneCard(props) {
       }, index * 120);
     });
   
+    
     setTimeout(() => {
-      if (props.showCoachTip == null) props.setShowCoachTip("palm_and_move");
+      //if (props.showCoachTip == null && props.inHoverStateCard == null) {
+        //props.setShowCoachTip("palm_and_move");
+      //}
       setAlignLeft(true);
-      
     }, (spans.length + 3) * 120);
   }
 

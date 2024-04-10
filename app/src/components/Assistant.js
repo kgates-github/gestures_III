@@ -377,6 +377,7 @@ function Assistant(props) {
                 setShowCoachTip={setShowCoachTip}
                 setShowShadowDot={setShowShadowDot}
                 showCoachTip={showCoachTip}
+                inHoverStateCard={inHoverStateCard}
                 handleNoGesture={handleNoGesture}
                 setShowResponseCards={setShowResponseCards}
                 setIsInSelectionMode={setIsInSelectionMode}
