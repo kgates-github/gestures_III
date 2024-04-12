@@ -55,6 +55,7 @@ function Assistant(props) {
   const [showCheckConfirm, setShowCheckConfirm] = useState(false);
   const [isDone, setIsDone] = useState(false);  
   const [notificationData, setNotificationData] = useState([]);
+  const [cancelReadyForSelection, setCancelReadyForSelection] = useState(false);
 
   // To do: end animation for check, set closing animation to true
   // run animations, when last in done, call showResults, then reset
@@ -165,6 +166,7 @@ function Assistant(props) {
   const handleOpenPalm = (e, isInSelectionMode) => {
     //console.log('handleOpenPalm isInSelectionMode' + isInSelectionMode);
     props.subscribe("No_Gesture", handleNoGesture);
+    setCancelReadyForSelection(false); // This is used to cancel ready for selection state
 
     // Reset grip state
     setInGripStateCard(null);
@@ -186,6 +188,7 @@ function Assistant(props) {
   const handleNoGesture = (e) => {
     setShowShadowDot(false);
     setInHoverStateCard(null);
+    setCancelReadyForSelection(true); // Cancel if card is activated but not selected
 
     anchor_x.current = -1000;
     props.unsubscribe("Hand_Coords", handleGestureXY);
@@ -298,7 +301,8 @@ function Assistant(props) {
 
   return (
     <>
-      {/*<div style={{
+      {/*
+      <div style={{
         position: "fixed", 
         height:"100%", 
         width:"100%", 
@@ -314,9 +318,10 @@ function Assistant(props) {
           marginLeft: "auto",
           marginRight: "auto",
           position: "relative",
-          top: "200px",
+          top: "70px",
         }}></div>
-      </div>*/}
+      </div>
+      */}
       <GestureShadowDot x={x} y={y} showShadowDot={showShadowDot} />
       
       <CoachTip 
@@ -335,6 +340,11 @@ function Assistant(props) {
         text2={"Grab and release to select / unselect"}
         showCoachTip={showCoachTip == "grab_card"}
       />
+      <CoachTip 
+        image={"icon_thumb_up"} 
+        text2={"Thumbs up to submit"}
+        showCoachTip={showCoachTip == "thumbs_up"}
+      />
 
       <div className="outerContainer" style={{ 
         position: "fixed", 
@@ -345,32 +355,24 @@ function Assistant(props) {
         alignItems: "center",
         justifyContent: "center",
       }}>
-          {
-            notificationData.map((item, index) => (
-              <motion.div
-                key={index}
-                animate={{ opacity: 1, y: 0, ease: 'easeOut'}}
-                initial={{ opacity: 0, y: 10,ease: 'easeOut' }}
-                transition={{ duration: 0.2, delay: index * 0.2, }}
-              >
-                {item}
-              </motion.div>
-            ))
-          }
+        {
+          notificationData.map((item, index) => (
+            <motion.div
+              key={index}
+              animate={{ opacity: 1, y: 0, ease: 'easeOut'}}
+              initial={{ opacity: 0, y: 10,ease: 'easeOut' }}
+              transition={{ duration: 0.2, delay: index * 0.2, }}
+            >
+              {item}
+            </motion.div>
+          ))
+        }
       </div>
       
       <div className="outerContainer" style={{ 
         position: "fixed", 
         zIndex:10,
       }}>
-        {/*
-        <NotificationWindow 
-          showNotification={showNotification} 
-          setShowNotification={setShowNotification} 
-          setShowCoachTip={setShowCoachTip}
-          animal={animal} 
-        />
-        */}
         <motion.div id="innerContainer"
           variants={variantsDialog}
           animate={dialogAnimation}
@@ -430,6 +432,7 @@ function Assistant(props) {
                     setSelectedCard={setSelectedCard}
                     unsetSelectedCard={unsetSelectedCard}
                     setShowCoachTip={setShowCoachTip}
+                    cancelReadyForSelection={cancelReadyForSelection}
                   />
                 ))
               }

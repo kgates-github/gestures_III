@@ -158,21 +158,28 @@ function ReponseCard(props) {
   useEffect(() => {
     props.setShowCoachTip(null)
   }, [props.data, setInselectedState, inSelectedState]);
+  
+  useEffect(() => {
+    if (props.cancelReadyForSelection) {
+      setReadyForSelection(false);
+    }
+  }, [props.cancelReadyForSelection]);
 
   useEffect(() => {
-    
     if (props.readyForSelection && !readyForSelection && props.inGripState) {
       // If card is not ready for selection, but is gripped and in hover state, set ready for selection
       // When user releases grip and is in hover state, select the card
       setReadyForSelection(true)
     } else if (readyForSelection && !props.inGripState && !props.data.isSelected) {
       // If card is ready for selection, but is not gripped and in hover state, select the card
-      // This captures the user releasing the  grip
+      // This captures the user releasing the grip
       props.setSelectedCard(props.data.id)
+      props.setShowCoachTip('thumbs_up')
       setReadyForSelection(false)
     } else if (readyForSelection && !props.inGripState && props.data.isSelected) {
       // Card is already selected, grip released, unselect card
       props.unsetSelectedCard(props.data.id)
+      props.setShowCoachTip('thumbs_up')
       setReadyForSelection(false)
     }
   }, [props.inGripState, props.data.isSelected]);
@@ -274,7 +281,7 @@ function ReponseCard(props) {
               d="M15 29L25 38L40 19"
               fill="transparent"
               strokeWidth="6"
-              stroke="#0FD446"
+              stroke="#00aa44"
               variants={checkVariants}
               initial="inactive"
               transform="scale(0.6) translate(-10, -10)"

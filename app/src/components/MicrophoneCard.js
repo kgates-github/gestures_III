@@ -12,7 +12,7 @@ function MicrophoneCard(props) {
   const log = useContext(LogContext);
   const [micActive, setMicActive] = useState(false);
   const [alignLeft, setAlignLeft] = useState(false);
-  //const [micAnimation, setMicAnimation] = useState('active');
+  const [showCheck, setShowCheck] = useState(false);
   const [animationCardMain, setAnimationCardMain] = useState('inactive');
 
   // Track mic is on so we don't get error
@@ -43,7 +43,7 @@ function MicrophoneCard(props) {
       translateX: -450,
       scale: 1,
       opacity: 1, 
-      transition: { duration: 0.6, ease: 'anticipate' }
+      transition: { duration: 0.6, ease: 'anticipate', delay: 0.2 }
     },
     leftInactive: { 
       y: 0,
@@ -57,6 +57,18 @@ function MicrophoneCard(props) {
   const answerVariants = {
     active: { color: "#ff0000", transition: { duration: 0.3, ease: 'easeOut' } }, 
     inactive: { color: "#ffcc00" },
+  }
+
+  // TO DO - add animation for checkmark
+  const checkVariants = {
+    active: { 
+      opacity: 1, 
+      scale: [0, 1.1, 1],
+      transition: { duration: 0.3, ease: 'backOut' } 
+    },
+    inactive: { 
+      opacity: 0, 
+    },
   }
 
   const getAnimation = () => {
@@ -98,7 +110,8 @@ function MicrophoneCard(props) {
         //props.setShowCoachTip("palm_and_move");
       //}
       setAlignLeft(true);
-    }, (spans.length + 3) * 120);
+      setShowCheck(true);
+    }, (spans.length + 1) * 120);
   }
 
   recognition.onstart = () => {
@@ -126,7 +139,9 @@ function MicrophoneCard(props) {
   
   useEffect(() => {
     setAlignLeft(false);
+    setShowCheck(false);
     props.setShowCoachTip(null);
+
     if (props.transcription.length < 1) {
       if (alignLeft) {
         setAnimationCardMain(props.showCard ? "active" : "leftInactive");
@@ -185,14 +200,15 @@ function MicrophoneCard(props) {
           { (props.transcription.length > 0) ? 
             formatTranscription(props.transcription) 
             : 
-            "What do you want to cook? (e.g., \"Tacos\")" }<span className="material-icons" 
+            "What do you want to cook? (e.g., \"Tacos\")" }<span 
+            className="material-icons" 
             style={{ 
               fontSize: "20px",
               fontWeight: "700", 
-              color: "#009944", 
+              color: "#00aa44", 
               position: 'relative',
               top: '3px',
-              opacity: !micActive && props.transcription.length ? 1 : 0,
+              opacity: showCheck ? 1 : 0,
             }}>
             check
           </span>

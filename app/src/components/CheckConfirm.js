@@ -10,36 +10,47 @@ function CheckConfirm(props) {
     active: { 
       opacity: 1, 
       y: -30,
-      x:-130,
-      transition: { duration: 0.4, ease: 'easeOut', delay: 0.8 }
+      x:-800,
+      transition: { duration: 0.2, ease: 'easeOut', delay: 0 }
     },
     inactive: { 
       opacity: 0, 
       y: -30,
-      x:-160,
-      transition: { duration: 0.4, ease: 'easeOut', delay: 0.8 }
+      x:-800,
+      transition: { duration: 0.2, ease: 'easeOut', delay: 0 }
     },
     exit: {
       opacity: 0, 
       y: -30,
-      x:-160,
-      transition: { duration: 0.4, ease: 'easeOut' }
+      x:-800,
+      transition: { duration: 0.2, ease: 'easeOut' }
     }
   }
 
   const circleVariants = {
-    inactive: { pathLength: 0, },
-    active: { pathLength: 1,}
+    inactive: { 
+      pathLength: 0, 
+      transition: { duration: 0.2, ease: 'easeOut', delay: 0.4 }
+    },
+    active: { 
+      pathLength: 1,
+      transition: { duration: 0.2, ease: 'easeOut', delay: 0.4 }
+    }
   };
 
   const checkVariants = {
-    inactive: { pathLength: 0, },
-    active: { pathLength: 1,}
+    inactive: { pathLength: 0,
+    transition: { duration: 0.2, ease: 'easeOut', delay: 0.4 }
+    },
+    active: { 
+      pathLength: 1,
+      transition: { duration: 0.2, ease: 'easeOut', delay: 0.4 }
+    }
   };
 
   return (
     <motion.div
-      animate={props.isActive ? 'active' : 'inactive'}
+      animate={props.isDone ? 'active' : 'inactive'}
       variants={variantsConfirm}
       initial="inactive"
       style={{
@@ -72,7 +83,7 @@ function CheckConfirm(props) {
           d="M 43, 43 m -28.5, 0 a 28.5,28.5 0 1,0 57,0 a 28.5,28.5 0 1,0 -57,0"
           fill="transparent"
           strokeWidth="8"
-          stroke="#0CC62A"
+          stroke="#00aa44"
           variants={circleVariants}
           initial="inactive"
           animate={props.isDone ? 'active' : 'inactive'}
@@ -82,7 +93,7 @@ function CheckConfirm(props) {
           d="M15 29L25 38L40 19"
           fill="transparent"
           strokeWidth="8"
-          stroke="#0CC62A"
+          stroke="#00aa44"
           variants={checkVariants}
           initial="inactive"
           transform="translate(15, 15.5)"
@@ -93,7 +104,8 @@ function CheckConfirm(props) {
           }}
         />
       </svg>
-        
+      
+      {/*
       <motion.img 
         src={process.env.PUBLIC_URL + '/svg/icon_thumb_up_alt.svg'} 
         style={{
@@ -116,7 +128,7 @@ function CheckConfirm(props) {
         boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.4)",
       }}>
         {props.text}
-      </div>
+    </div>*/}
       
     </motion.div>
   );
