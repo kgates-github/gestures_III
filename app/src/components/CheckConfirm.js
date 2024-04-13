@@ -10,19 +10,19 @@ function CheckConfirm(props) {
     active: { 
       opacity: 1, 
       y: -30,
-      x:-800,
+      x:-145,
       transition: { duration: 0.2, ease: 'easeOut', delay: 0 }
     },
     inactive: { 
       opacity: 0, 
       y: -30,
-      x:-800,
+      x:-145,
       transition: { duration: 0.2, ease: 'easeOut', delay: 0 }
     },
     exit: {
       opacity: 0, 
       y: -30,
-      x:-800,
+      x:-145,
       transition: { duration: 0.2, ease: 'easeOut' }
     }
   }
@@ -30,23 +30,32 @@ function CheckConfirm(props) {
   const circleVariants = {
     inactive: { 
       pathLength: 0, 
-      transition: { duration: 0.2, ease: 'easeOut', delay: 0.4 }
+      transition: { duration: 0.2, ease: 'easeOut', delay: 0.6 }
     },
     active: { 
       pathLength: 1,
-      transition: { duration: 0.2, ease: 'easeOut', delay: 0.4 }
+      transition: { duration: 0.2, ease: 'easeOut', delay: 0.6 }
     }
   };
 
   const checkVariants = {
     inactive: { pathLength: 0,
-    transition: { duration: 0.2, ease: 'easeOut', delay: 0.4 }
+    transition: { duration: 0.2, ease: 'easeOut', delay: 0.6 }
     },
     active: { 
       pathLength: 1,
-      transition: { duration: 0.2, ease: 'easeOut', delay: 0.4 }
+      transition: { duration: 0.2, ease: 'easeOut', delay: 0.6 }
     }
   };
+
+  useEffect(() => {
+    if (props.isDone) {
+      props.setDialogAnimation('pre_exit')
+      props.setShowCoachTip(null)
+    }
+  }, [props.isDone]);
+
+  
 
   return (
     <motion.div
@@ -61,6 +70,29 @@ function CheckConfirm(props) {
         background: "none",
       }}
     >
+      <svg width="300" height="300">
+        <motion.path
+          d="M15 29L25 38L40 19"
+          fill="transparent"
+          strokeWidth="6"
+          stroke="#25C02B"
+          variants={checkVariants}
+          initial="inactive"
+          transform="translate(90, 50), scale(3)"
+          animate={props.isDone ? 'active' : 'inactive'}
+          transition={{ duration: 0.4, ease: 'easeOut', delay: 0.6 }} 
+          onAnimationComplete={() => {
+            props.setDialogAnimation('exit')
+          }}
+        />
+      </svg>
+      
+    </motion.div>
+  );
+}
+export default CheckConfirm;
+
+ {/*
       <div style={{
         position:"relative", 
         top:"74px", 
@@ -105,7 +137,7 @@ function CheckConfirm(props) {
         />
       </svg>
       
-      {/*
+      
       <motion.img 
         src={process.env.PUBLIC_URL + '/svg/icon_thumb_up_alt.svg'} 
         style={{
@@ -129,9 +161,3 @@ function CheckConfirm(props) {
       }}>
         {props.text}
     </div>*/}
-      
-    </motion.div>
-  );
-}
-export default CheckConfirm;
-

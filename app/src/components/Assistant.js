@@ -75,6 +75,10 @@ function Assistant(props) {
     ready: {
       opacity: 1,
     },
+    pre_exit: {
+      opacity: 0.2,
+      transition: { duration: 0.3, ease: 'easeInOut' }
+    },
     exit: {
       opacity: 0,
       transition: { duration: 0.3, ease: 'easeInOut' }
@@ -140,6 +144,16 @@ function Assistant(props) {
       return item;
     });
     setFakeResponseData(newFakeResponseData);
+  }  
+
+  const unsetAllCards = () => {
+    //console.log('unsetSelectedCard')
+    const newFakeResponseData = fakeResponseData.map((item) => {   
+      item.isSelected = false;
+      return item;
+    });
+    setFakeResponseData(initialFakeResponseData);
+    setNotificationData([]);
   }  
 
   /****************************************
@@ -208,6 +222,7 @@ function Assistant(props) {
 
   const handleThumbUp = () => {
     setIsDone(true);
+    setShowShadowDot(false);
   }
 
   const handleClosedFist = (e, inHoverStateCard) => {
@@ -296,6 +311,14 @@ function Assistant(props) {
     } 
   }, [inHoverStateCard]);
 
+  useEffect(() => {
+    if (isActive) {
+      log('*** isActive ***');
+      unsetAllCards();
+    }
+  }, [isActive]);
+
+  
   //let w = 1250;
   //let h = w * 9 / 16;
 
@@ -342,26 +365,28 @@ function Assistant(props) {
       />
       <CoachTip 
         image={"icon_thumb_up"} 
-        text2={"Thumbs up to submit"}
+        text2={"Thumbs up to finish"}
         showCoachTip={showCoachTip == "thumbs_up"}
       />
 
-      <div className="outerContainer" style={{ 
-        position: "fixed", 
-        zIndex:10,
-        top: "0px",
-        display: "flex",
-        flexDirection: "column", 
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
+      <div className="outerContainer" 
+        style={{ 
+          position: "fixed", 
+          zIndex:10,
+          top: "0px",
+          display: "flex",
+          flexDirection: "column", 
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         {
           notificationData.map((item, index) => (
             <motion.div
               key={index}
               animate={{ opacity: 1, y: 0, ease: 'easeOut'}}
               initial={{ opacity: 0, y: 10,ease: 'easeOut' }}
-              transition={{ duration: 0.2, delay: index * 0.2, }}
+              transition={{ duration: 0.2, delay: 1 + index * 0.2, }}
             >
               {item}
             </motion.div>
@@ -372,6 +397,7 @@ function Assistant(props) {
       <div className="outerContainer" style={{ 
         position: "fixed", 
         zIndex:10,
+        background: "none",
       }}>
         <motion.div id="innerContainer"
           variants={variantsDialog}
@@ -383,8 +409,13 @@ function Assistant(props) {
             }
           }}
           initial="dormant"
+          style={{background: "none", position: "relative", left:"180px"}}
         >
-          <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', marginTop:"40px"}}>
+          <div style={{
+            display: 'flex', 
+            flexDirection: 'row',
+            alignItems: 'center', 
+            marginTop:"40px"}}>
             <motion.div
               className="dialog"
               style={{display: 'flex', flexDirection: 'row', alignItems: 'center', zIndex: 90}}
@@ -436,19 +467,22 @@ function Assistant(props) {
                   />
                 ))
               }
-               <CheckConfirm 
-                  isActive={showCheckConfirm} 
-                  isDone={isDone} 
-                  text={"Done?"}
-                  handleCheckConfirm={handleCheckConfirm}
-                  setDialogAnimation={setDialogAnimation}
-                  //setIsExiting={false}
-                />
+               
             </div>
            
           </div>
          
         </motion.div>
+        <CheckConfirm 
+          style={{zIndex: 1000}}
+          isActive={showCheckConfirm} 
+          isDone={isDone} 
+          text={"Done?"}
+          handleCheckConfirm={handleCheckConfirm}
+          setDialogAnimation={setDialogAnimation}
+          setShowCoachTip={setShowCoachTip}
+          //setIsExiting={false}
+        />
       </div>
       <button onClick={() => reset()} style={{position: "fixed", right:"0px", zIndex:20002}}>Reset</button>
     </>
